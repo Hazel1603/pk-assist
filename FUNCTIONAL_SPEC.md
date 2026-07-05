@@ -1,0 +1,41 @@
+# Personal Knowledge Assistant
+
+Difficulty: ★★☆☆☆
+
+## Description
+
+Use `PREVIOUS_PROJECTS.md` as context when working on this project. `PREVIOUS_PROJECTS.md` describes the earlier AI CLI Assistant project and should be passed in as background context so the Personal Knowledge Assistant can build on concepts the user has already covered.
+
+User:
+
+- "What did I write about Kafka?"
+- "Summarize my notes on agent memory."
+- "Find notes related to vector databases."
+
+Agent:
+
+- searches a folder of notes
+- retrieves relevant documents or chunks
+- summarizes the answer
+- cites which notes were used
+
+## You'll Learn
+
+- embeddings
+- semantic search
+- vector databases
+- retrieval-augmented generation
+- chunking documents
+- building a small personal knowledge base
+
+## Version Management
+
+- v0.1 — Load notes from a folder.
+- v0.2 — Search notes with simple keyword matching.
+- v0.3 — Split notes into chunks.
+- v0.4 — Generate embeddings for chunks.
+- v0.5 — Store embeddings in a local vector database.
+- v0.6 — Retrieve relevant chunks for a user question.
+- v0.7 — Answer questions using retrieved context.
+- v0.8 — Show sources/citations for answers.
+- v0.9 — Add update/re-index command for changed notes.
