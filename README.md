@@ -10,7 +10,7 @@ This repo is organized as a learning path. The `main` branch is the landing page
 | --- | --- | --- |
 | `main` | Overview | Project roadmap and branch navigation. |
 | `feature/v0.1` | Available | Load notes from a folder, recursively read `.md` and `.txt` files, and list loaded note paths. |
-| `feature/v0.2` | Planned | Search notes with simple keyword matching. |
+| `feature/v0.2` | Available | Search loaded notes with simple keyword matching across note paths and contents. |
 | `feature/v0.3` | Planned | Split notes into chunks for retrieval. |
 | `feature/v0.4` | Planned | Generate embeddings for note chunks. |
 | `feature/v0.5` | Planned | Store embeddings in a local vector database. |
@@ -31,6 +31,12 @@ To view and run the first working version:
 
 ```bash
 git checkout feature/v0.1
+```
+
+To view and run the keyword search version:
+
+```bash
+git checkout feature/v0.2
 ```
 
 After switching branches, read that branch's `README.md` for setup and run instructions.
