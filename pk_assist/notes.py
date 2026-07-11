@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+#################### note implementation ####################
 @dataclass
 class Note:
     path: Path
@@ -43,3 +44,44 @@ def search_notes(notes: list[Note], query: str) -> list[Note]:
             filtered.append(note)
 
     return filtered
+
+
+#################### chunk implementation ####################
+@dataclass
+class Chunk:
+    note_path: Path
+    chunk_index: int
+    content: str
+
+def chunk_notes(notes: list[Note]) -> list[Chunk]:
+    chunks = []
+    for note in notes: 
+        chunks.extend(chunk_note(note))
+    return chunks
+
+def chunk_note(note: Note, max_chars: int = 500) -> list[Chunk]:
+    chunks = []
+    content = note.content.strip()
+    note_path = note.path
+    chunk_index = 0
+
+    if content == "":
+        return chunks
+
+    paragraphs = content.split("\n\n") # split by new line
+
+    for paragraph in paragraphs: 
+        for start in range(0, len(paragraph), max_chars):
+            chunk_content = paragraph[start:start + max_chars].strip() # split by max_chars
+            if chunk_content == "":
+                continue
+            chunks.append(
+                Chunk(
+                    note_path = note_path, 
+                    chunk_index = chunk_index,
+                    content = chunk_content
+                )
+            )
+            chunk_index += 1
+    return chunks
+

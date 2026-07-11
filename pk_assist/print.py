@@ -40,5 +40,8 @@ def print_no_folder():
     print(f"{computer}No notes folder passed! Skip loading...")
     print("\tUsage: python3 -m pk_assist.cli <notes-folder>")
 
+def print_chunks(chunks):
+    print(f"{computer}created {len(chunks)} chunks")
+
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")

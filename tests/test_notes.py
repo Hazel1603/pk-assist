@@ -6,7 +6,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 
-from pk_assist.notes import Note, load_notes, search_notes
+from pk_assist.notes import Chunk, Note, chunk_note, load_notes, search_notes
 
 
 class LoadNotesTests(unittest.TestCase):
@@ -234,6 +234,78 @@ class SearchNotesTests(unittest.TestCase):
         results = search_notes(notes, "research")
 
         self.assertEqual(results, notes)
+
+
+class ChunkNoteTests(unittest.TestCase):
+    def test_splits_note_into_one_chunk_when_content_is_short(self):
+        note = Note(
+            path=Path("kafka.md"),
+            title="kafka.md",
+            content="Kafka is a durable event log.",
+        )
+
+        chunks = chunk_note(note, max_chars=100)
+
+        self.assertEqual(
+            chunks,
+            [
+                Chunk(
+                    note_path=Path("kafka.md"),
+                    chunk_index=0,
+                    content="Kafka is a durable event log.",
+                )
+            ],
+        )
+
+    def test_splits_long_note_into_multiple_chunks(self):
+        note = Note(
+            path=Path("agent-memory.txt"),
+            title="agent-memory.txt",
+            content="First paragraph.\n\nSecond paragraph.\n\nThird paragraph.",
+        )
+
+        chunks = chunk_note(note, max_chars=30)
+
+        self.assertEqual(len(chunks), 3)
+        self.assertEqual([chunk.chunk_index for chunk in chunks], [0, 1, 2])
+        self.assertEqual([chunk.content for chunk in chunks], [
+            "First paragraph.",
+            "Second paragraph.",
+            "Third paragraph.",
+        ])
+
+    def test_chunk_preserves_source_note_path(self):
+        note = Note(
+            path=Path("research/chunking.txt"),
+            title="chunking.txt",
+            content="Split long documents into smaller pieces.",
+        )
+
+        chunks = chunk_note(note, max_chars=100)
+
+        self.assertEqual(chunks[0].note_path, Path("research/chunking.txt"))
+
+    def test_empty_note_returns_no_chunks(self):
+        note = Note(
+            path=Path("empty.md"),
+            title="empty.md",
+            content="",
+        )
+
+        chunks = chunk_note(note)
+
+        self.assertEqual(chunks, [])
+
+    def test_whitespace_only_note_returns_no_chunks(self):
+        note = Note(
+            path=Path("empty.md"),
+            title="empty.md",
+            content="   \n\n   ",
+        )
+
+        chunks = chunk_note(note)
+
+        self.assertEqual(chunks, [])
 
 
 if __name__ == "__main__":

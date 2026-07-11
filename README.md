@@ -24,7 +24,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.2 is implemented. The app can load notes from a folder, print how many notes were loaded, list each loaded note path, and search loaded notes with simple keyword matching.
+v0.3 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, and split loaded notes into smaller text chunks.
 
 Implemented features:
 
@@ -41,10 +41,13 @@ Implemented features:
 - Search case-insensitively.
 - Show matching note paths.
 - Show a friendly message when no notes match.
+- Split loaded notes into smaller text chunks.
+- Preserve the source note path for each chunk.
+- Assign a stable index to each chunk.
+- Skip empty chunks.
 
 Planned capabilities:
 
-- Split notes into chunks.
 - Generate embeddings for chunks.
 - Store embeddings in a local vector database.
 - Retrieve relevant chunks for a user question.

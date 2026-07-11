@@ -1,15 +1,17 @@
 import sys
 from pathlib import Path
 
-from pk_assist.notes import load_notes, search_notes
-from pk_assist.print import print_loaded_notes, print_goodbye, print_note, print_no_file, print_idk, print_not_folder_or_dir, print_no_folder, print_filtered_notes, print_no_query
+from pk_assist.notes import load_notes, search_notes, chunk_notes
+from pk_assist.print import print_loaded_notes, print_goodbye, print_note, print_no_file, print_idk, print_not_folder_or_dir, print_no_folder, print_filtered_notes, print_no_query, print_chunks
 from pk_assist.input_util import should_exit, should_list, should_show, should_search
 
 # temporary global variable
 NOTES = []
+CHUNKS = []
 
 def init_app():
     global NOTES
+    global CHUNKS
     
     if len(sys.argv) < 2:
         print_no_folder()
@@ -23,8 +25,10 @@ def init_app():
         return
     
     NOTES = load_notes(folder)
-
     print_loaded_notes(NOTES)
+
+    CHUNKS = chunk_notes(NOTES)
+    print_chunks(CHUNKS)
 
 def run_cli():
     global NOTES

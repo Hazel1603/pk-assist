@@ -56,3 +56,12 @@ Agent:
 - App prints matching note paths.
 - App shows a friendly message when no notes match.
 - Search behavior is covered by basic tests.
+
+## v0.3 Acceptance Criteria
+
+- App can split a loaded note into smaller text chunks.
+- Each chunk preserves the source note path.
+- Each chunk has a stable chunk index.
+- Empty notes produce no chunks.
+- Long notes can produce multiple chunks.
+- Chunking behavior is covered by basic tests.
