@@ -12,7 +12,7 @@ This repo is organized as a learning path. The `main` branch is the landing page
 | `feature/v0.1` | Available | Load notes from a folder, recursively read `.md` and `.txt` files, and list loaded note paths. |
 | `feature/v0.2` | Available | Search loaded notes with simple keyword matching across note paths and contents. |
 | `feature/v0.3` | Available | Split notes into chunks for retrieval. |
-| `feature/v0.4` | Planned | Generate embeddings for note chunks. |
+| `feature/v0.4` | Available | Generate fake deterministic embeddings for note chunks. |
 | `feature/v0.5` | Planned | Store embeddings in a local vector database. |
 | `feature/v0.6` | Planned | Retrieve relevant chunks for a user question. |
 | `feature/v0.7` | Planned | Answer questions using retrieved context. |
@@ -43,6 +43,12 @@ To view and run the chunking version:
 
 ```bash
 git checkout feature/v0.3
+```
+
+To view and run the fake embedding version:
+
+```bash
+git checkout feature/v0.4
 ```
 
 After switching branches, read that branch's `README.md` for setup and run instructions.
