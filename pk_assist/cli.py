@@ -35,7 +35,7 @@ def should_list(user_input):
     return user_input.lower() in {"list", "list notes"}
 
 def should_show(user_input):
-    return user_input.lower() in {"show"}
+    return user_input.lower().startswith("show ")
 
 def run_cli():
     global NOTES
