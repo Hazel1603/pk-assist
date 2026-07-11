@@ -46,5 +46,8 @@ def print_chunks(chunks):
 def print_embedded_chunks(embedded_chunks):
     print(f"{computer}created {len(embedded_chunks)} embedded chunks")
 
+def print_database_entries(entries):
+    print(f"{computer}created {entries} entries in database")
+
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")

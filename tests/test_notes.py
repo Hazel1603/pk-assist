@@ -9,7 +9,9 @@ from pathlib import Path
 from pk_assist.notes import (
     Chunk,
     EmbeddedChunk,
+    LocalVectorDatabase,
     Note,
+    VectorRecord,
     chunk_note,
     embed_chunks,
     embed_text,
@@ -439,6 +441,103 @@ class EmbedChunksTests(unittest.TestCase):
         embedded_chunks = embed_chunks([])
 
         self.assertEqual(embedded_chunks, [])
+
+
+class LocalVectorDatabaseTests(unittest.TestCase):
+    def test_stores_embedded_chunks_as_vector_records(self):
+        chunks = [
+            Chunk(
+                note_path=Path("kafka.md"),
+                chunk_index=0,
+                content="Kafka stores events.",
+            ),
+            Chunk(
+                note_path=Path("vector-databases.md"),
+                chunk_index=1,
+                content="Vector databases store embeddings.",
+            ),
+        ]
+        embedded_chunks = [
+            EmbeddedChunk(
+                chunk=chunks[0],
+                embedding=[1.0, 2.0, 3.0],
+            ),
+            EmbeddedChunk(
+                chunk=chunks[1],
+                embedding=[4.0, 5.0, 6.0],
+            ),
+        ]
+        database = LocalVectorDatabase()
+
+        database.add_many(embedded_chunks)
+
+        self.assertEqual(
+            database.records,
+            [
+                VectorRecord(
+                    note_path=Path("kafka.md"),
+                    chunk_index=0,
+                    content="Kafka stores events.",
+                    embedding=[1.0, 2.0, 3.0],
+                ),
+                VectorRecord(
+                    note_path=Path("vector-databases.md"),
+                    chunk_index=1,
+                    content="Vector databases store embeddings.",
+                    embedding=[4.0, 5.0, 6.0],
+                ),
+            ],
+        )
+
+    def test_add_stores_one_embedded_chunk(self):
+        chunk = Chunk(
+            note_path=Path("agent-memory.txt"),
+            chunk_index=2,
+            content="Agents can remember useful context.",
+        )
+        embedded_chunk = EmbeddedChunk(
+            chunk=chunk,
+            embedding=[7.0, 8.0, 9.0],
+        )
+        database = LocalVectorDatabase()
+
+        database.add(embedded_chunk)
+
+        self.assertEqual(
+            database.records,
+            [
+                VectorRecord(
+                    note_path=Path("agent-memory.txt"),
+                    chunk_index=2,
+                    content="Agents can remember useful context.",
+                    embedding=[7.0, 8.0, 9.0],
+                )
+            ],
+        )
+
+    def test_count_returns_number_of_stored_vector_records(self):
+        chunk = Chunk(
+            note_path=Path("kafka.md"),
+            chunk_index=0,
+            content="Kafka stores events.",
+        )
+        embedded_chunk = EmbeddedChunk(
+            chunk=chunk,
+            embedding=[1.0, 2.0, 3.0],
+        )
+        database = LocalVectorDatabase()
+
+        database.add(embedded_chunk)
+
+        self.assertEqual(database.count(), 1)
+
+    def test_empty_embedded_chunk_list_stores_zero_records(self):
+        database = LocalVectorDatabase()
+
+        database.add_many([])
+
+        self.assertEqual(database.records, [])
+        self.assertEqual(database.count(), 0)
 
 
 if __name__ == "__main__":

@@ -74,3 +74,14 @@ Agent:
 - Each embedded chunk preserves the original chunk.
 - Empty chunk lists produce no embedded chunks.
 - Embedding behavior is covered by basic tests.
+
+## v0.5 Acceptance Criteria
+
+- App can create a local vector database.
+- App can store embedded chunks in the local vector database.
+- Each stored vector record preserves the source note path.
+- Each stored vector record preserves the source chunk index.
+- Each stored vector record preserves the chunk content.
+- Each stored vector record preserves the chunk embedding.
+- Empty embedded chunk lists store zero vector records.
+- Vector database storage behavior is covered by basic tests.

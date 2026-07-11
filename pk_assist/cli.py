@@ -1,19 +1,21 @@
 import sys
 from pathlib import Path
 
-from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks
-from pk_assist.print import print_loaded_notes, print_goodbye, print_note, print_no_file, print_idk, print_not_folder_or_dir, print_no_folder, print_filtered_notes, print_no_query, print_chunks, print_embedded_chunks
+from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks, LocalVectorDatabase
+from pk_assist.print import print_loaded_notes, print_goodbye, print_note, print_no_file, print_idk, print_not_folder_or_dir, print_no_folder, print_filtered_notes, print_no_query, print_chunks, print_embedded_chunks, print_database_entries
 from pk_assist.input_util import should_exit, should_list, should_show, should_search
 
 # temporary global variable
 NOTES = []
 CHUNKS = []
 EMBEDDED_CHUNKS = []
+DATABASE = None
 
 def init_app():
     global NOTES
     global CHUNKS
     global EMBEDDED_CHUNKS
+    global DATABASE
     
     if len(sys.argv) < 2:
         print_no_folder()
@@ -34,6 +36,10 @@ def init_app():
 
     EMBEDDED_CHUNKS = embed_chunks(CHUNKS)
     print_embedded_chunks(EMBEDDED_CHUNKS)
+
+    DATABASE = LocalVectorDatabase()
+    DATABASE.add_many(EMBEDDED_CHUNKS)
+    print_database_entries(DATABASE.count())
 
 def run_cli():
     global NOTES

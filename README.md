@@ -24,7 +24,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.3 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, and split loaded notes into smaller text chunks.
+v0.5 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, and store embedded chunks in a local in-memory vector database.
 
 Implemented features:
 
@@ -45,11 +45,13 @@ Implemented features:
 - Preserve the source note path for each chunk.
 - Assign a stable index to each chunk.
 - Skip empty chunks.
+- Generate deterministic fake embeddings for chunks.
+- Preserve the original chunk when creating embedded chunks.
+- Store embedded chunks as vector records in a local vector database.
+- Preserve the source note path, chunk index, chunk content, and embedding for each vector record.
 
 Planned capabilities:
 
-- Generate embeddings for chunks.
-- Store embeddings in a local vector database.
 - Retrieve relevant chunks for a user question.
 - Answer questions using retrieved context.
 - Show sources and citations for answers.

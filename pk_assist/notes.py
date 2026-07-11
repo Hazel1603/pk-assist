@@ -117,3 +117,34 @@ def embed_text(text: str) -> list[float]:
         float(normalized.count("o")),
         float(normalized.count("u")),
     ]
+
+
+
+#################### vectorrecord implementation ####################
+@dataclass
+class VectorRecord:
+    note_path: Path
+    chunk_index: int
+    content: str
+    embedding: list[float]
+
+class LocalVectorDatabase:
+    def __init__(self):
+        self.records = []
+
+    def add(self, embedded_chunk: EmbeddedChunk):
+        self.records.append(
+            VectorRecord(
+                note_path=embedded_chunk.chunk.note_path,
+                chunk_index=embedded_chunk.chunk.chunk_index,
+                content=embedded_chunk.chunk.content,
+                embedding=embedded_chunk.embedding,
+            )
+        )
+
+    def add_many(self, embedded_chunks: list[EmbeddedChunk]):
+        for embedded_chunk in embedded_chunks:
+            self.add(embedded_chunk)
+
+    def count(self) -> int:
+        return len(self.records)
