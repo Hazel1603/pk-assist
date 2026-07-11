@@ -43,5 +43,8 @@ def print_no_folder():
 def print_chunks(chunks):
     print(f"{computer}created {len(chunks)} chunks")
 
+def print_embedded_chunks(embedded_chunks):
+    print(f"{computer}created {len(embedded_chunks)} embedded chunks")
+
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")

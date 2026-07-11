@@ -65,3 +65,12 @@ Agent:
 - Empty notes produce no chunks.
 - Long notes can produce multiple chunks.
 - Chunking behavior is covered by basic tests.
+
+## v0.4 Acceptance Criteria
+
+- App can generate a fake embedding for a text chunk.
+- Fake embeddings are deterministic for the same text input.
+- Each embedding is represented as a list of floats.
+- Each embedded chunk preserves the original chunk.
+- Empty chunk lists produce no embedded chunks.
+- Embedding behavior is covered by basic tests.

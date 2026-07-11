@@ -85,3 +85,35 @@ def chunk_note(note: Note, max_chars: int = 500) -> list[Chunk]:
             chunk_index += 1
     return chunks
 
+#################### embeddedchunk implementation ####################
+@dataclass
+class EmbeddedChunk:
+    chunk: Chunk
+    embedding: list[float]
+
+def embed_chunks(chunks: list[Chunk]) -> list[EmbeddedChunk]:
+    embedded_chunks = []
+
+    for chunk in chunks: 
+        embedded_chunks.append(
+            EmbeddedChunk(
+                chunk = chunk, 
+                embedding = embed_text(chunk.content)
+            )
+        )
+
+    return embedded_chunks
+
+def embed_text(text: str) -> list[float]:
+    # to be replaced later
+    normalized = text.lower()
+
+    return [
+        float(len(text)),
+        float(len(text.split())),
+        float(normalized.count("a")),
+        float(normalized.count("e")),
+        float(normalized.count("i")),
+        float(normalized.count("o")),
+        float(normalized.count("u")),
+    ]

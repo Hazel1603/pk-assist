@@ -6,7 +6,16 @@ from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 
-from pk_assist.notes import Chunk, Note, chunk_note, load_notes, search_notes
+from pk_assist.notes import (
+    Chunk,
+    EmbeddedChunk,
+    Note,
+    chunk_note,
+    embed_chunks,
+    embed_text,
+    load_notes,
+    search_notes,
+)
 
 
 class LoadNotesTests(unittest.TestCase):
@@ -132,6 +141,17 @@ class LoadNotesTests(unittest.TestCase):
             self.assertEqual(notes[0].title, "kafka.md")
             self.assertEqual(notes[0].content, note_content)
 
+    def test_returns_empty_list_when_folder_has_no_notes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            folder = Path(temp_dir)
+            unsupported_file = folder / "image.png"
+
+            unsupported_file.write_text("not a note", encoding="utf-8")
+
+            notes = load_notes(folder)
+
+            self.assertEqual(notes, [])
+
 
 class SearchNotesTests(unittest.TestCase):
     def test_finds_notes_with_query_in_content(self):
@@ -221,6 +241,19 @@ class SearchNotesTests(unittest.TestCase):
         results = search_notes(notes, "   ")
 
         self.assertEqual(results, [])
+
+    def test_search_strips_surrounding_whitespace(self):
+        notes = [
+            Note(
+                path=Path("kafka.md"),
+                title="kafka.md",
+                content="Kafka is a durable event log.",
+            ),
+        ]
+
+        results = search_notes(notes, "   kafka   ")
+
+        self.assertEqual(results, notes)
         
     def test_finds_notes_with_query_in_path_folder(self):
         notes = [
@@ -274,6 +307,36 @@ class ChunkNoteTests(unittest.TestCase):
             "Third paragraph.",
         ])
 
+    def test_splits_single_long_paragraph_into_multiple_chunks(self):
+        note = Note(
+            path=Path("long.md"),
+            title="long.md",
+            content="abcdefghij",
+        )
+
+        chunks = chunk_note(note, max_chars=4)
+
+        self.assertEqual(
+            chunks,
+            [
+                Chunk(
+                    note_path=Path("long.md"),
+                    chunk_index=0,
+                    content="abcd",
+                ),
+                Chunk(
+                    note_path=Path("long.md"),
+                    chunk_index=1,
+                    content="efgh",
+                ),
+                Chunk(
+                    note_path=Path("long.md"),
+                    chunk_index=2,
+                    content="ij",
+                ),
+            ],
+        )
+
     def test_chunk_preserves_source_note_path(self):
         note = Note(
             path=Path("research/chunking.txt"),
@@ -306,6 +369,76 @@ class ChunkNoteTests(unittest.TestCase):
         chunks = chunk_note(note)
 
         self.assertEqual(chunks, [])
+
+
+class EmbedTextTests(unittest.TestCase):
+    def test_creates_fake_embedding_from_text_features(self):
+        embedding = embed_text("Aa ee i o u")
+
+        self.assertEqual(
+            embedding,
+            [
+                11.0,  # character count
+                5.0,   # word count
+                2.0,   # a count
+                2.0,   # e count
+                1.0,   # i count
+                1.0,   # o count
+                1.0,   # u count
+            ],
+        )
+
+    def test_embedding_is_deterministic_for_same_text(self):
+        first_embedding = embed_text("Kafka stores events")
+        second_embedding = embed_text("Kafka stores events")
+
+        self.assertEqual(first_embedding, second_embedding)
+
+    def test_embedding_values_are_floats(self):
+        embedding = embed_text("Vector databases store embeddings.")
+
+        self.assertTrue(all(isinstance(value, float) for value in embedding))
+
+    def test_embedding_has_stable_length(self):
+        self.assertEqual(len(embed_text("Kafka")), 7)
+        self.assertEqual(len(embed_text("Vector databases")), 7)
+
+
+class EmbedChunksTests(unittest.TestCase):
+    def test_embeds_each_chunk_and_preserves_original_chunk(self):
+        chunks = [
+            Chunk(
+                note_path=Path("kafka.md"),
+                chunk_index=0,
+                content="Kafka stores events.",
+            ),
+            Chunk(
+                note_path=Path("vector-databases.md"),
+                chunk_index=1,
+                content="Vector databases store embeddings.",
+            ),
+        ]
+
+        embedded_chunks = embed_chunks(chunks)
+
+        self.assertEqual(
+            embedded_chunks,
+            [
+                EmbeddedChunk(
+                    chunk=chunks[0],
+                    embedding=embed_text(chunks[0].content),
+                ),
+                EmbeddedChunk(
+                    chunk=chunks[1],
+                    embedding=embed_text(chunks[1].content),
+                ),
+            ],
+        )
+
+    def test_returns_empty_list_when_there_are_no_chunks(self):
+        embedded_chunks = embed_chunks([])
+
+        self.assertEqual(embedded_chunks, [])
 
 
 if __name__ == "__main__":
