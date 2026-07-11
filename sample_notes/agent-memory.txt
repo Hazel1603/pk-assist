@@ -1,0 +1,10 @@
+Agent Memory
+
+Agent memory is the idea that an assistant can remember useful information
+across a task or across many sessions.
+
+Short-term memory can live in the current conversation. Long-term memory often
+needs a storage layer, such as files, a database, or a vector database.
+
+For this personal knowledge assistant, retrieval from notes will act like a
+simple form of long-term memory.

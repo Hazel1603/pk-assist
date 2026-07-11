@@ -39,3 +39,11 @@ Agent:
 - v0.7 — Answer questions using retrieved context.
 - v0.8 — Show sources/citations for answers.
 - v0.9 — Add update/re-index command for changed notes.
+
+## v0.1 Acceptance Criteria
+
+- User can pass a folder path from the command line.
+- App recursively loads `.md` and `.txt` files.
+- App prints the number of loaded notes.
+- App prints each loaded note path.
+- Loader is covered by basic tests.

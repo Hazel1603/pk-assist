@@ -1,0 +1,8 @@
+Chunking Notes
+
+Chunking means splitting longer documents into smaller pieces before retrieval.
+If chunks are too large, they may contain unrelated information. If chunks are
+too small, they may lose useful context.
+
+A simple first strategy is to split by paragraphs, then later experiment with
+token-based chunk sizes and overlap.
