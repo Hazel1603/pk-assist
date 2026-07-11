@@ -17,7 +17,7 @@ def load_notes(folder: Path) -> list[Note]:
             except UnicodeDecodeError:
                 print(f"⚯ : Could not read file as UTF-8: {path}")
                 continue
-                
+
             notes.append(
                 Note(
                     path=path,
@@ -26,3 +26,20 @@ def load_notes(folder: Path) -> list[Note]:
                 )
             )
     return notes
+
+def search_notes(notes: list[Note], query: str) -> list[Note]:
+    filtered = []
+
+    query_lower = query.strip().lower()
+
+    if query_lower == "":
+        return filtered
+
+    for note in notes:
+        path_contains_query = query_lower in str(note.path).lower()
+        content_contains_query = query_lower in note.content.lower()
+
+        if path_contains_query or content_contains_query:
+            filtered.append(note)
+
+    return filtered

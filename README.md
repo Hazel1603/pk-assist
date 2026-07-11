@@ -24,9 +24,9 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.1 is implemented. The app can load notes from a folder, print how many notes were loaded, and list each loaded note path.
+v0.2 is implemented. The app can load notes from a folder, print how many notes were loaded, list each loaded note path, and search loaded notes with simple keyword matching.
 
-Implemented v0.1 features:
+Implemented features:
 
 - Load notes from a folder.
 - Read `.md`, `.txt`, `.MD`, and `.TXT` files.
@@ -36,10 +36,14 @@ Implemented v0.1 features:
 - Show a friendly message when no notes folder is provided or the folder does not exist.
 - Print the number of loaded notes.
 - Print each loaded note path.
+- Search loaded notes from the CLI.
+- Search note paths and note contents.
+- Search case-insensitively.
+- Show matching note paths.
+- Show a friendly message when no notes match.
 
 Planned capabilities:
 
-- Search notes with simple keyword matching.
 - Split notes into chunks.
 - Generate embeddings for chunks.
 - Store embeddings in a local vector database.
@@ -64,10 +68,24 @@ Planned capabilities:
 
 ## Setup
 
-Run the v0.1 CLI with a notes folder path:
+Run the CLI with a notes folder path:
 
 ```bash
 python3 -m pk_assist.cli sample_notes
+```
+
+Inside the CLI, search loaded notes:
+
+```text
+search kafka
+```
+
+You can also list loaded notes, show a note by path, or exit:
+
+```text
+list
+show sample_notes/kafka.md
+bye
 ```
 
 Run the tests:

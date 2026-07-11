@@ -47,3 +47,12 @@ Agent:
 - App prints the number of loaded notes.
 - App prints each loaded note path.
 - Loader is covered by basic tests.
+
+## v0.2 Acceptance Criteria
+
+- User can search loaded notes from the CLI.
+- Search checks note path and note content.
+- Search is case-insensitive.
+- App prints matching note paths.
+- App shows a friendly message when no notes match.
+- Search behavior is covered by basic tests.

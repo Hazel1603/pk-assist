@@ -6,7 +6,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 
-from pk_assist.notes import load_notes
+from pk_assist.notes import Note, load_notes, search_notes
 
 
 class LoadNotesTests(unittest.TestCase):
@@ -131,6 +131,109 @@ class LoadNotesTests(unittest.TestCase):
 
             self.assertEqual(notes[0].title, "kafka.md")
             self.assertEqual(notes[0].content, note_content)
+
+
+class SearchNotesTests(unittest.TestCase):
+    def test_finds_notes_with_query_in_content(self):
+        notes = [
+            Note(
+                path=Path("kafka.md"),
+                title="kafka.md",
+                content="Kafka is a durable event log.",
+            ),
+            Note(
+                path=Path("agent-memory.txt"),
+                title="agent-memory.txt",
+                content="Agents can keep useful context over time.",
+            ),
+        ]
+
+        results = search_notes(notes, "event log")
+
+        self.assertEqual(results, [notes[0]])
+
+    def test_finds_notes_with_query_in_title(self):
+        notes = [
+            Note(
+                path=Path("vector-databases.md"),
+                title="vector-databases.md",
+                content="Stores embeddings for semantic search.",
+            ),
+            Note(
+                path=Path("chunking.txt"),
+                title="chunking.txt",
+                content="Split long documents into smaller pieces.",
+            ),
+        ]
+
+        results = search_notes(notes, "vector")
+
+        self.assertEqual(results, [notes[0]])
+
+    def test_search_is_case_insensitive(self):
+        notes = [
+            Note(
+                path=Path("agent-memory.txt"),
+                title="agent-memory.txt",
+                content="Agent Memory helps preserve context.",
+            ),
+        ]
+
+        results = search_notes(notes, "memory")
+
+        self.assertEqual(results, notes)
+
+    def test_returns_empty_list_when_no_notes_match(self):
+        notes = [
+            Note(
+                path=Path("kafka.md"),
+                title="kafka.md",
+                content="Kafka is a durable event log.",
+            ),
+        ]
+
+        results = search_notes(notes, "pineapple")
+
+        self.assertEqual(results, [])
+
+    def test_returns_empty_list_for_empty_query(self):
+        notes = [
+            Note(
+                path=Path("kafka.md"),
+                title="kafka.md",
+                content="Kafka is a durable event log.",
+            ),
+        ]
+
+        results = search_notes(notes, "")
+
+        self.assertEqual(results, [])
+
+    def test_returns_empty_list_for_whitespace_query(self):
+        notes = [
+            Note(
+                path=Path("kafka.md"),
+                title="kafka.md",
+                content="Kafka is a durable event log.",
+            ),
+        ]
+
+        results = search_notes(notes, "   ")
+
+        self.assertEqual(results, [])
+        
+    def test_finds_notes_with_query_in_path_folder(self):
+        notes = [
+            Note(
+                path=Path("research/chunking.txt"),
+                title="chunking.txt",
+                content="Split long documents into smaller pieces.",
+            ),
+        ]
+
+        results = search_notes(notes, "research")
+
+        self.assertEqual(results, notes)
 
 
 if __name__ == "__main__":
