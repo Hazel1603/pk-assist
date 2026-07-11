@@ -1,12 +1,71 @@
 # Personal Knowledge Assistant
 
-A small personal knowledge assistant for learning retrieval-augmented generation.
+A small command-line project for learning how to build a retrieval-augmented personal knowledge assistant.
 
-This project follows the roadmap in `FUNCTIONAL_SPEC.md`. It builds on the earlier AI CLI Assistant described in `PREVIOUS_PROJECTS.md`, so that file should be passed in as background context alongside `FUNCTIONAL_SPEC.md`.
+This repo is organized as a learning path. The `main` branch is the landing page and roadmap. Each milestone lives on its own branch so you can inspect the project one step at a time.
 
-## Goal
+## Branches
 
-The assistant will help answer questions about a folder of personal notes. It should retrieve relevant notes or chunks, summarize the answer, and cite which source notes were used.
+| Branch | Status | What it shows |
+| --- | --- | --- |
+| `main` | Overview | Project roadmap and branch navigation. |
+| `feature/v0.1` | Available | Load notes from a folder, recursively read `.md` and `.txt` files, and list loaded note paths. |
+| `feature/v0.2` | Planned | Search notes with simple keyword matching. |
+| `feature/v0.3` | Planned | Split notes into chunks for retrieval. |
+| `feature/v0.4` | Planned | Generate embeddings for note chunks. |
+| `feature/v0.5` | Planned | Store embeddings in a local vector database. |
+| `feature/v0.6` | Planned | Retrieve relevant chunks for a user question. |
+| `feature/v0.7` | Planned | Answer questions using retrieved context. |
+| `feature/v0.8` | Planned | Show sources and citations for answers. |
+| `feature/v0.9` | Planned | Re-index changed notes. |
+
+## How To Navigate
+
+Start from `main` to read the roadmap:
+
+```bash
+git checkout main
+```
+
+To view and run the first working version:
+
+```bash
+git checkout feature/v0.1
+```
+
+After switching branches, read that branch's `README.md` for setup and run instructions.
+
+To see all local branches:
+
+```bash
+git branch
+```
+
+To return to the overview:
+
+```bash
+git checkout main
+```
+
+## Learning Roadmap
+
+The project follows the plan in `FUNCTIONAL_SPEC.md`:
+
+- v0.1 - Load notes from a folder.
+- v0.2 - Search notes with simple keyword matching.
+- v0.3 - Split notes into chunks.
+- v0.4 - Generate embeddings for chunks.
+- v0.5 - Store embeddings in a local vector database.
+- v0.6 - Retrieve relevant chunks for a user question.
+- v0.7 - Answer questions using retrieved context.
+- v0.8 - Show sources/citations for answers.
+- v0.9 - Add update/re-index command for changed notes.
+
+The goal is to keep each step small and understandable before adding more retrieval-augmented generation behavior.
+
+## Project Goal
+
+The assistant will eventually help answer questions about a folder of personal notes. It should retrieve relevant notes or chunks, summarize the answer, and cite which source notes were used.
 
 Example questions:
 
@@ -22,48 +81,17 @@ Summarize my notes on agent memory.
 Find notes related to vector databases.
 ```
 
-## Current Status
-
-This repository currently contains the project specification and context files. The app implementation has not been added yet.
-
-Planned capabilities:
-
-- Load notes from a folder.
-- Search notes with simple keyword matching.
-- Split notes into chunks.
-- Generate embeddings for chunks.
-- Store embeddings in a local vector database.
-- Retrieve relevant chunks for a user question.
-- Answer questions using retrieved context.
-- Show sources and citations for answers.
-- Re-index changed notes.
-
 ## Context Files
 
 - `FUNCTIONAL_SPEC.md` defines the project goal, learning objectives, and version roadmap.
 - `PREVIOUS_PROJECTS.md` summarizes the earlier AI CLI Assistant project and the concepts already covered.
 
-## You'll Learn
+## Possible Project Extensions
 
-- Embeddings
-- Semantic search
-- Vector databases
-- Retrieval-augmented generation
-- Document chunking
-- Building a small personal knowledge base
+After v0.9, good optional features include:
 
-## Setup
-
-There is no runnable application yet. Once code is added, this section should describe how to create a virtual environment, install dependencies, configure environment variables, and run the assistant.
-
-## Project Roadmap
-
-- v0.1 - Load notes from a folder.
-- v0.2 - Search notes with simple keyword matching.
-- v0.3 - Split notes into chunks.
-- v0.4 - Generate embeddings for chunks.
-- v0.5 - Store embeddings in a local vector database.
-- v0.6 - Retrieve relevant chunks for a user question.
-- v0.7 - Answer questions using retrieved context.
-- v0.8 - Show sources/citations for answers.
-- v0.9 - Add update/re-index command for changed notes.
+- Watching the notes folder for changes.
+- Supporting more file types.
+- Better citation formatting.
+- Hybrid keyword and semantic search.
+- A small local web interface.
