@@ -13,7 +13,7 @@ This repo is organized as a learning path. The `main` branch is the landing page
 | `feature/v0.2` | Available | Search loaded notes with simple keyword matching across note paths and contents. |
 | `feature/v0.3` | Available | Split notes into chunks for retrieval. |
 | `feature/v0.4` | Available | Generate fake deterministic embeddings for note chunks. |
-| `feature/v0.5` | Planned | Store embeddings in a local vector database. |
+| `feature/v0.5` | Available | Store embeddings in a local in-memory vector database. |
 | `feature/v0.6` | Planned | Retrieve relevant chunks for a user question. |
 | `feature/v0.7` | Planned | Answer questions using retrieved context. |
 | `feature/v0.8` | Planned | Show sources and citations for answers. |
@@ -49,6 +49,12 @@ To view and run the fake embedding version:
 
 ```bash
 git checkout feature/v0.4
+```
+
+To view and run the local vector database version:
+
+```bash
+git checkout feature/v0.5
 ```
 
 After switching branches, read that branch's `README.md` for setup and run instructions.
