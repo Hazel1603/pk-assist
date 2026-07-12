@@ -75,6 +75,10 @@ Sources and Evaluation
 - v0.12 — Compare retrieval and context strategies.
 - v0.13 — Add update/re-index command for changed notes.
 
+## Current Implementation Status
+
+v0.7 is implemented. The app can now retrieve relevant chunks and construct a compact context block from them. The context block includes source note path, chunk index, and chunk content, preserves retrieval order, and supports a configurable maximum character budget.
+
 ## v0.1 Acceptance Criteria
 
 - User can pass a folder path from the command line.
