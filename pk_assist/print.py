@@ -56,5 +56,11 @@ def print_vector_records(records: list[VectorRecord]):
     for record in records:
         print(f"\t- {record}")
 
+def print_context(context):
+    print(f"{computer}Constructed context:")
+    if context == "":
+        return
+    print(context)
+
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")

@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks, LocalVectorDatabase
+from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks, LocalVectorDatabase, build_context
 from pk_assist.print import *
 from pk_assist.input_util import *
 
@@ -73,6 +73,7 @@ def run_cli():
                     continue
                 results = DATABASE.search(parts[1].strip())
                 print_vector_records(results)
+                print_context(build_context(results))
             else:
                 print_idk()
                 continue

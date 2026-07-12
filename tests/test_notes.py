@@ -12,6 +12,7 @@ from pk_assist.notes import (
     LocalVectorDatabase,
     Note,
     VectorRecord,
+    build_context,
     chunk_note,
     embed_chunks,
     embed_text,
@@ -651,6 +652,89 @@ class LocalVectorDatabaseTests(unittest.TestCase):
         results = database.search("Kafka")
 
         self.assertEqual(results, [])
+
+
+class BuildContextTests(unittest.TestCase):
+    def test_empty_retrieval_results_produce_empty_context(self):
+        context = build_context([])
+
+        self.assertEqual(context, "")
+
+    def test_context_includes_source_path_chunk_index_and_content(self):
+        records = [
+            VectorRecord(
+                note_path=Path("kafka.md"),
+                chunk_index=0,
+                content="Kafka stores events.",
+                embedding=[1.0, 2.0, 3.0],
+            )
+        ]
+
+        context = build_context(records)
+
+        self.assertIn("Source: kafka.md", context)
+        self.assertIn("Chunk: 0", context)
+        self.assertIn("Kafka stores events.", context)
+
+    def test_context_preserves_retrieval_ranking_order(self):
+        records = [
+            VectorRecord(
+                note_path=Path("first.md"),
+                chunk_index=0,
+                content="First retrieved chunk.",
+                embedding=[1.0],
+            ),
+            VectorRecord(
+                note_path=Path("second.md"),
+                chunk_index=1,
+                content="Second retrieved chunk.",
+                embedding=[2.0],
+            ),
+        ]
+
+        context = build_context(records)
+
+        self.assertLess(
+            context.index("Source: first.md"),
+            context.index("Source: second.md"),
+        )
+
+    def test_context_respects_max_character_budget(self):
+        first_record = VectorRecord(
+            note_path=Path("first.md"),
+            chunk_index=0,
+            content="Short.",
+            embedding=[1.0],
+        )
+        second_record = VectorRecord(
+            note_path=Path("second.md"),
+            chunk_index=1,
+            content="This chunk is too long to fit.",
+            embedding=[2.0],
+        )
+        first_context = build_context([first_record])
+
+        context = build_context(
+            [first_record, second_record],
+            max_chars=len(first_context),
+        )
+
+        self.assertEqual(context, first_context)
+        self.assertNotIn("Source: second.md", context)
+
+    def test_context_excludes_first_chunk_when_it_exceeds_budget(self):
+        records = [
+            VectorRecord(
+                note_path=Path("large.md"),
+                chunk_index=0,
+                content="This chunk is too large for the budget.",
+                embedding=[1.0],
+            )
+        ]
+
+        context = build_context(records, max_chars=10)
+
+        self.assertEqual(context, "")
 
 
 if __name__ == "__main__":

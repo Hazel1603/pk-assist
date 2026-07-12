@@ -128,6 +128,14 @@ class VectorRecord:
     content: str
     embedding: list[float]
 
+    def to_context_string(self) -> str:
+        return (
+            f"Source: {self.note_path}\n"
+            f"Chunk: {self.chunk_index}\n"
+            f"Content:\n"
+            f"{self.content}\n\n"
+        )
+
 class LocalVectorDatabase:
     def __init__(self):
         self.records = []
@@ -163,9 +171,17 @@ class LocalVectorDatabase:
         scored_records.sort(reverse=True, key=lambda item: item[0])
 
         return [record for score, record in scored_records[:limit]]
-        
+
+def build_context(records: list[VectorRecord], max_chars: int = 2000) -> str:
+    context = ""
+    for record in records:
+        record_string = record.to_context_string()
+        if len(context) + len(record_string) <= max_chars:
+            context += record_string
+        else: 
+            break
+    return context
 
 #################### helper methods ####################
 def dot_product(first: list[float], second: list[float]) -> float:
     return sum(a * b for a, b in zip(first, second))
-
