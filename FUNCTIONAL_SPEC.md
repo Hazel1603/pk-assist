@@ -77,7 +77,7 @@ Sources and Evaluation
 
 ## Current Implementation Status
 
-v0.7 is implemented. The app can now retrieve relevant chunks and construct a compact context block from them. The context block includes source note path, chunk index, and chunk content, preserves retrieval order, and supports a configurable maximum character budget.
+v0.8 is implemented. The app can now retrieve relevant chunks, construct a compact context block from them, and answer a user question using that constructed context. The CLI keeps retrieval/context inspection separate from generated answers, and answer generation is covered by tests that use a fake or stubbed model boundary.
 
 ## v0.1 Acceptance Criteria
 

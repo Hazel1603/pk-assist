@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.7 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, and build a compact context block from retrieved chunks.
+v0.8 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, build a compact context block from retrieved chunks, and answer a question using that constructed context.
 
 Implemented features:
 
@@ -65,11 +65,14 @@ Implemented features:
 - Apply a configurable maximum character budget when constructing context.
 - Exclude chunks that do not fit within the context budget.
 - Print constructed context from the CLI after retrieval.
-- Search and retrieve from the CLI as separate commands.
+- Answer questions from the CLI using constructed context.
+- Clearly print constructed context separately from generated answers.
+- Show a friendly response when no relevant context is available.
+- Use a stubbed model boundary for deterministic answer-generation tests.
+- Search, retrieve, and ask questions from the CLI as separate commands.
 
 Planned capabilities:
 
-- Answer questions using constructed context.
 - Show sources and citations for answers.
 - Evaluate retrieval quality.
 - Compare retrieval and context strategies.
@@ -135,6 +138,12 @@ Retrieve relevant chunks from the vector database and print the constructed cont
 
 ```text
 retrieve vector databases
+```
+
+Ask a question using retrieved context:
+
+```text
+ask What did I write about Kafka?
 ```
 
 You can also list loaded notes, show a note by path, or exit:
