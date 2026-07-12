@@ -62,5 +62,11 @@ def print_context(context):
         return
     print(context)
 
+def print_answer(answer):
+    print(f"{computer}Generated answer:")
+    if answer == "":
+        return
+    print(answer)
+
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")

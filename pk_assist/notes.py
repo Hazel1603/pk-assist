@@ -172,6 +172,9 @@ class LocalVectorDatabase:
 
         return [record for score, record in scored_records[:limit]]
 
+
+
+#################### context methods ####################
 def build_context(records: list[VectorRecord], max_chars: int = 2000) -> str:
     context = ""
     for record in records:
@@ -181,6 +184,21 @@ def build_context(records: list[VectorRecord], max_chars: int = 2000) -> str:
         else: 
             break
     return context
+
+
+def answer_question(question: str, context: str, model) -> str:
+    if context.strip() == "":
+        return "I could not find relevant context to answer that question."
+
+    prompt = (
+        "Answer the question using only the context below.\n"
+        "If the context does not contain the answer, say so.\n\n"
+        f"Question:\n{question}\n\n"
+        f"Context:\n{context}"
+    )
+
+    return model.generate(prompt)
+
 
 #################### helper methods ####################
 def dot_product(first: list[float], second: list[float]) -> float:

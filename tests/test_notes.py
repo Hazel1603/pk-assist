@@ -12,6 +12,7 @@ from pk_assist.notes import (
     LocalVectorDatabase,
     Note,
     VectorRecord,
+    answer_question,
     build_context,
     chunk_note,
     embed_chunks,
@@ -735,6 +736,81 @@ class BuildContextTests(unittest.TestCase):
         context = build_context(records, max_chars=10)
 
         self.assertEqual(context, "")
+
+
+class FakeModel:
+    def __init__(self, response="Generated answer."):
+        self.response = response
+        self.prompts = []
+
+    def generate(self, prompt: str) -> str:
+        self.prompts.append(prompt)
+        return self.response
+
+
+class FailingModel:
+    def generate(self, prompt: str) -> str:
+        raise AssertionError("Model should not be called.")
+
+
+class AnswerQuestionTests(unittest.TestCase):
+    def test_empty_context_returns_friendly_response(self):
+        answer = answer_question(
+            "What did I write about Kafka?",
+            "",
+            FailingModel(),
+        )
+
+        self.assertEqual(
+            answer,
+            "I could not find relevant context to answer that question.",
+        )
+
+    def test_whitespace_context_returns_friendly_response(self):
+        answer = answer_question(
+            "What did I write about Kafka?",
+            "   \n\n   ",
+            FailingModel(),
+        )
+
+        self.assertEqual(
+            answer,
+            "I could not find relevant context to answer that question.",
+        )
+
+    def test_answer_uses_model_response_when_context_is_available(self):
+        model = FakeModel(response="Kafka is described as a durable event log.")
+
+        answer = answer_question(
+            "What did I write about Kafka?",
+            "Source: kafka.md\nChunk: 0\nContent:\nKafka is a durable event log.",
+            model,
+        )
+
+        self.assertEqual(answer, "Kafka is described as a durable event log.")
+
+    def test_prompt_includes_question_and_context(self):
+        model = FakeModel()
+        question = "What did I write about Kafka?"
+        context = "Source: kafka.md\nChunk: 0\nContent:\nKafka stores events."
+
+        answer_question(question, context, model)
+
+        self.assertEqual(len(model.prompts), 1)
+        self.assertIn(f"Question:\n{question}", model.prompts[0])
+        self.assertIn(f"Context:\n{context}", model.prompts[0])
+
+    def test_prompt_requires_answer_to_use_only_provided_context(self):
+        model = FakeModel()
+
+        answer_question(
+            "What did I write about Kafka?",
+            "Source: kafka.md\nChunk: 0\nContent:\nKafka stores events.",
+            model,
+        )
+
+        self.assertIn("using only the context", model.prompts[0].lower())
+        self.assertIn("if the context does not contain the answer", model.prompts[0].lower())
 
 
 if __name__ == "__main__":

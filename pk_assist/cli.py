@@ -1,9 +1,10 @@
 import sys
 from pathlib import Path
 
-from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks, LocalVectorDatabase, build_context
+from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks, LocalVectorDatabase, build_context, answer_question
 from pk_assist.print import *
 from pk_assist.input_util import *
+from pk_assist.model import PlaceholderModel
 
 # temporary global variable
 NOTES = []
@@ -74,6 +75,18 @@ def run_cli():
                 results = DATABASE.search(parts[1].strip())
                 print_vector_records(results)
                 print_context(build_context(results))
+            elif should_ask(user_input):
+                parts = user_input.split(" ", 1)
+                if len(parts) < 2 or parts[1].strip() == "":
+                    print_no_query()
+                    continue
+                question = parts[1].strip()
+                results = DATABASE.search(question)
+                context = build_context(results)
+                answer = answer_question(question, context, PlaceholderModel())
+
+                print_context(context)
+                print_answer(answer)
             else:
                 print_idk()
                 continue
