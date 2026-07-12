@@ -75,6 +75,17 @@ Sources and Evaluation
 - v0.12 — Compare retrieval and context strategies.
 - v0.13 — Add update/re-index command for changed notes.
 
+## Current Implementation Status
+
+Implemented through v0.9:
+
+- The CLI can load, list, show, search, retrieve, and ask questions about notes.
+- Retrieved chunks are converted into a compact context block with a character budget.
+- The `ask` command answers using constructed context and prints a friendly fallback when no context is available.
+- Answers show citations for the source chunks that were included in the constructed context.
+- Citations include source note path and chunk index, and repeated source references are displayed once.
+- Loader, search, chunking, embedding, vector storage, retrieval, context construction, answer generation, citation, print, and CLI behavior are covered by tests.
+
 ## v0.1 Acceptance Criteria
 
 - User can pass a folder path from the command line.

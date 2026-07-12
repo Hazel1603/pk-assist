@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.6 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, and retrieve relevant chunks for a user question.
+v0.9 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, build compact context, answer questions from that context, and show citations for the source chunks used in an answer.
 
 Implemented features:
 
@@ -59,13 +59,18 @@ Implemented features:
 - Convert user questions into fake embeddings for retrieval.
 - Rank retrieved records by similarity score.
 - Limit retrieved results to the top matching records.
-- Search and retrieve from the CLI as separate commands.
+- Build compact context from retrieved chunks.
+- Preserve source note path, chunk index, and chunk content in context.
+- Limit constructed context with a configurable character budget.
+- Answer questions using constructed context.
+- Return a friendly response when no relevant context is available.
+- Show citations for answers.
+- Include source note path and chunk index in citations.
+- Deduplicate repeated citation references.
+- Search, retrieve, and ask questions from the CLI as separate commands.
 
 Planned capabilities:
 
-- Build compact context from retrieved chunks.
-- Answer questions using constructed context.
-- Show sources and citations for answers.
 - Evaluate retrieval quality.
 - Compare retrieval and context strategies.
 - Re-index changed notes.
@@ -130,6 +135,18 @@ Retrieve relevant chunks from the vector database:
 
 ```text
 retrieve vector databases
+```
+
+Ask a question using retrieved context:
+
+```text
+ask What did I write about Kafka?
+```
+
+The `ask` command prints the constructed context, a generated answer, and citations such as:
+
+```text
+kafka.md#chunk-0
 ```
 
 You can also list loaded notes, show a note by path, or exit:
