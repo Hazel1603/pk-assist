@@ -68,5 +68,12 @@ def print_answer(answer):
         return
     print(answer)
 
+def print_citations(citations):
+    print(f"{computer}Cited:")
+    if not citations:
+        return 
+    for citation in citations:
+        print(f"\t- {citation}")
+
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")

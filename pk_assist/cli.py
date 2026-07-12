@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks, LocalVectorDatabase, build_context, answer_question
+from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks, LocalVectorDatabase, build_context, answer_question, build_citations, build_context_result
 from pk_assist.print import *
 from pk_assist.input_util import *
 from pk_assist.model import PlaceholderModel
@@ -82,11 +82,13 @@ def run_cli():
                     continue
                 question = parts[1].strip()
                 results = DATABASE.search(question)
-                context = build_context(results)
-                answer = answer_question(question, context, PlaceholderModel())
+                context_result = build_context_result(results)
+                answer = answer_question(question, context_result.text, PlaceholderModel())
+                citations = build_citations(context_result.records)
 
-                print_context(context)
+                print_context(context_result.text)
                 print_answer(answer)
+                print_citations(citations)
             else:
                 print_idk()
                 continue

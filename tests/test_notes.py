@@ -13,7 +13,9 @@ from pk_assist.notes import (
     Note,
     VectorRecord,
     answer_question,
+    build_citations,
     build_context,
+    build_context_result,
     chunk_note,
     embed_chunks,
     embed_text,
@@ -736,6 +738,130 @@ class BuildContextTests(unittest.TestCase):
         context = build_context(records, max_chars=10)
 
         self.assertEqual(context, "")
+
+
+class BuildContextResultTests(unittest.TestCase):
+    def test_empty_retrieval_results_produce_empty_context_result(self):
+        context_result = build_context_result([])
+
+        self.assertEqual(context_result.text, "")
+        self.assertEqual(context_result.records, [])
+
+    def test_context_result_includes_text_and_used_records(self):
+        record = VectorRecord(
+            note_path=Path("kafka.md"),
+            chunk_index=0,
+            content="Kafka stores events.",
+            embedding=[1.0],
+        )
+
+        context_result = build_context_result([record])
+
+        self.assertIn("Source: kafka.md", context_result.text)
+        self.assertIn("Chunk: 0", context_result.text)
+        self.assertIn("Kafka stores events.", context_result.text)
+        self.assertEqual(context_result.records, [record])
+
+    def test_context_result_records_preserve_context_budget_order(self):
+        first_record = VectorRecord(
+            note_path=Path("first.md"),
+            chunk_index=0,
+            content="Short.",
+            embedding=[1.0],
+        )
+        second_record = VectorRecord(
+            note_path=Path("second.md"),
+            chunk_index=1,
+            content="This chunk is too long to fit.",
+            embedding=[2.0],
+        )
+        first_context = build_context([first_record])
+
+        context_result = build_context_result(
+            [first_record, second_record],
+            max_chars=len(first_context),
+        )
+
+        self.assertEqual(context_result.text, first_context)
+        self.assertEqual(context_result.records, [first_record])
+
+    def test_context_result_excludes_first_record_when_it_exceeds_budget(self):
+        record = VectorRecord(
+            note_path=Path("large.md"),
+            chunk_index=0,
+            content="This chunk is too large for the budget.",
+            embedding=[1.0],
+        )
+
+        context_result = build_context_result([record], max_chars=10)
+
+        self.assertEqual(context_result.text, "")
+        self.assertEqual(context_result.records, [])
+
+
+class BuildCitationsTests(unittest.TestCase):
+    def test_empty_retrieval_results_produce_no_citations(self):
+        citations = build_citations([])
+
+        self.assertEqual(citations, [])
+
+    def test_citations_include_source_path_and_chunk_index(self):
+        records = [
+            VectorRecord(
+                note_path=Path("kafka.md"),
+                chunk_index=0,
+                content="Kafka stores events.",
+                embedding=[1.0],
+            ),
+            VectorRecord(
+                note_path=Path("agent-memory.txt"),
+                chunk_index=2,
+                content="Agents can remember useful context.",
+                embedding=[2.0],
+            ),
+        ]
+
+        citations = build_citations(records)
+
+        self.assertEqual(
+            citations,
+            [
+                "kafka.md#chunk-0",
+                "agent-memory.txt#chunk-2",
+            ],
+        )
+
+    def test_duplicate_source_references_are_displayed_once(self):
+        records = [
+            VectorRecord(
+                note_path=Path("kafka.md"),
+                chunk_index=0,
+                content="Kafka stores events.",
+                embedding=[1.0],
+            ),
+            VectorRecord(
+                note_path=Path("kafka.md"),
+                chunk_index=0,
+                content="Kafka stores events again.",
+                embedding=[2.0],
+            ),
+            VectorRecord(
+                note_path=Path("kafka.md"),
+                chunk_index=1,
+                content="Kafka has partitions.",
+                embedding=[3.0],
+            ),
+        ]
+
+        citations = build_citations(records)
+
+        self.assertEqual(
+            citations,
+            [
+                "kafka.md#chunk-0",
+                "kafka.md#chunk-1",
+            ],
+        )
 
 
 class FakeModel:

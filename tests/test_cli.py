@@ -52,9 +52,15 @@ class RunCliAskTests(unittest.TestCase):
         self.assertIn("Kafka stores events.", printed)
         self.assertIn("Generated answer:", printed)
         self.assertIn("Kafka is described as storing events.", printed)
+        self.assertIn("Cited:", printed)
+        self.assertIn("kafka.md#chunk-0", printed)
         self.assertLess(
             printed.index("Constructed context:"),
             printed.index("Generated answer:"),
+        )
+        self.assertLess(
+            printed.index("Generated answer:"),
+            printed.index("Cited:"),
         )
 
     def test_ask_command_prints_friendly_response_when_no_context_is_available(self):
@@ -76,6 +82,8 @@ class RunCliAskTests(unittest.TestCase):
             "I could not find relevant context to answer that question.",
             printed,
         )
+        self.assertIn("Cited:", printed)
+        self.assertNotIn("#chunk-", printed)
 
     def test_ask_command_with_no_question_prints_no_query_message(self):
         database = FakeDatabase()

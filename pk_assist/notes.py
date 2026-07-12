@@ -135,6 +135,9 @@ class VectorRecord:
             f"Content:\n"
             f"{self.content}\n\n"
         )
+    
+    def to_citation_string(self) -> str:
+        return f"{self.note_path}#chunk-{self.chunk_index}"
 
 class LocalVectorDatabase:
     def __init__(self):
@@ -175,15 +178,47 @@ class LocalVectorDatabase:
 
 
 #################### context methods ####################
-def build_context(records: list[VectorRecord], max_chars: int = 2000) -> str:
+@dataclass
+class ContextResult:
+    text: str
+    records: list[VectorRecord]
+
+
+def build_context_result(
+    records: list[VectorRecord],
+    max_chars: int = 2000,
+) -> ContextResult:
     context = ""
+    used_records = []
+
     for record in records:
         record_string = record.to_context_string()
+
         if len(context) + len(record_string) <= max_chars:
             context += record_string
-        else: 
+            used_records.append(record)
+        else:
             break
-    return context
+
+    return ContextResult(
+        text=context,
+        records=used_records,
+    )
+
+
+def build_context(records: list[VectorRecord], max_chars: int = 2000) -> str:
+    return build_context_result(records, max_chars).text
+
+
+def build_citations(records: list[VectorRecord]) -> list[str]:
+    citations = []
+
+    for record in records:
+        citation = record.to_citation_string()
+        if citation not in citations:
+            citations.append(citation)
+
+    return citations
 
 
 def answer_question(question: str, context: str, model) -> str:
