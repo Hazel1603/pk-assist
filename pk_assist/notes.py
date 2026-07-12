@@ -148,3 +148,24 @@ class LocalVectorDatabase:
 
     def count(self) -> int:
         return len(self.records)
+    
+    def search(self, query: str, limit: int = 3) -> list[VectorRecord]:
+        if query.strip() == "":
+            return []
+
+        query_embedding = embed_text(query)
+        scored_records = []
+
+        for record in self.records:
+            score = dot_product(query_embedding, record.embedding)
+            scored_records.append((score, record))
+
+        scored_records.sort(reverse=True, key=lambda item: item[0])
+
+        return [record for score, record in scored_records[:limit]]
+        
+
+#################### helper methods ####################
+def dot_product(first: list[float], second: list[float]) -> float:
+    return sum(a * b for a, b in zip(first, second))
+

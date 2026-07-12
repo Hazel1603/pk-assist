@@ -9,3 +9,6 @@ def should_show(user_input):
 
 def should_search(user_input):
     return user_input.lower().startswith("search") or user_input.lower().startswith("query")
+
+def should_retrieve(user_input):
+    return user_input.lower().startswith("retrieve")

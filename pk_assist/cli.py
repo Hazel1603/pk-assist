@@ -2,8 +2,8 @@ import sys
 from pathlib import Path
 
 from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks, LocalVectorDatabase
-from pk_assist.print import print_loaded_notes, print_goodbye, print_note, print_no_file, print_idk, print_not_folder_or_dir, print_no_folder, print_filtered_notes, print_no_query, print_chunks, print_embedded_chunks, print_database_entries
-from pk_assist.input_util import should_exit, should_list, should_show, should_search
+from pk_assist.print import *
+from pk_assist.input_util import *
 
 # temporary global variable
 NOTES = []
@@ -66,6 +66,13 @@ def run_cli():
                     continue
                 filtered = search_notes(NOTES, parts[1].strip())
                 print_filtered_notes(filtered)
+            elif should_retrieve(user_input):
+                parts = user_input.split(" ", 1)
+                if len(parts) < 2 or parts[1].strip() == "":
+                    print_no_query()
+                    continue
+                results = DATABASE.search(parts[1].strip())
+                print_vector_records(results)
             else:
                 print_idk()
                 continue

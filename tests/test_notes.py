@@ -539,6 +539,119 @@ class LocalVectorDatabaseTests(unittest.TestCase):
         self.assertEqual(database.records, [])
         self.assertEqual(database.count(), 0)
 
+    def test_retrieves_records_for_a_user_question(self):
+        chunk = Chunk(
+            note_path=Path("kafka.md"),
+            chunk_index=0,
+            content="Kafka stores events.",
+        )
+        embedded_chunk = EmbeddedChunk(
+            chunk=chunk,
+            embedding=[1.0, 2.0, 3.0],
+        )
+        database = LocalVectorDatabase()
+        database.add(embedded_chunk)
+
+        results = database.search("Kafka")
+
+        self.assertEqual(
+            results,
+            [
+                VectorRecord(
+                    note_path=Path("kafka.md"),
+                    chunk_index=0,
+                    content="Kafka stores events.",
+                    embedding=[1.0, 2.0, 3.0],
+                )
+            ],
+        )
+
+    def test_retrieval_returns_most_relevant_records_first(self):
+        less_relevant_chunk = Chunk(
+            note_path=Path("low-score.md"),
+            chunk_index=0,
+            content="Low scoring chunk.",
+        )
+        more_relevant_chunk = Chunk(
+            note_path=Path("high-score.md"),
+            chunk_index=0,
+            content="High scoring chunk.",
+        )
+        database = LocalVectorDatabase()
+        database.add(
+            EmbeddedChunk(
+                chunk=less_relevant_chunk,
+                embedding=[0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+            )
+        )
+        database.add(
+            EmbeddedChunk(
+                chunk=more_relevant_chunk,
+                embedding=[10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0],
+            )
+        )
+
+        results = database.search("Kafka")
+
+        self.assertEqual(
+            [record.note_path for record in results],
+            [Path("high-score.md"), Path("low-score.md")],
+        )
+
+    def test_retrieval_supports_limiting_returned_records(self):
+        first_chunk = Chunk(
+            note_path=Path("first.md"),
+            chunk_index=0,
+            content="First chunk.",
+        )
+        second_chunk = Chunk(
+            note_path=Path("second.md"),
+            chunk_index=0,
+            content="Second chunk.",
+        )
+        database = LocalVectorDatabase()
+        database.add(
+            EmbeddedChunk(
+                chunk=first_chunk,
+                embedding=[10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0],
+            )
+        )
+        database.add(
+            EmbeddedChunk(
+                chunk=second_chunk,
+                embedding=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            )
+        )
+
+        results = database.search("Kafka", limit=1)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].note_path, Path("first.md"))
+
+    def test_empty_user_question_returns_no_retrieved_records(self):
+        chunk = Chunk(
+            note_path=Path("kafka.md"),
+            chunk_index=0,
+            content="Kafka stores events.",
+        )
+        database = LocalVectorDatabase()
+        database.add(
+            EmbeddedChunk(
+                chunk=chunk,
+                embedding=[1.0, 2.0, 3.0],
+            )
+        )
+
+        self.assertEqual(database.search(""), [])
+        self.assertEqual(database.search("   "), [])
+
+    def test_empty_database_returns_no_retrieved_records(self):
+        database = LocalVectorDatabase()
+
+        results = database.search("Kafka")
+
+        self.assertEqual(results, [])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,3 +1,5 @@
+from pk_assist.notes import VectorRecord
+
 computer = "⚯ : "
 confused = "(｡·  v  ·｡) ?"
 
@@ -48,6 +50,11 @@ def print_embedded_chunks(embedded_chunks):
 
 def print_database_entries(entries):
     print(f"{computer}created {entries} entries in database")
+
+def print_vector_records(records: list[VectorRecord]):
+    print(f"{computer}Retrieved the following records:")
+    for record in records:
+        print(f"\t- {record}")
 
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")
