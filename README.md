@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.8 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, build a compact context block from retrieved chunks, and answer a question using that constructed context.
+v0.10 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, build compact context, answer questions from that context, show citations for the source chunks used in an answer, and load a small retrieval evaluation dataset from a local file.
 
 Implemented features:
 
@@ -69,11 +69,15 @@ Implemented features:
 - Clearly print constructed context separately from generated answers.
 - Show a friendly response when no relevant context is available.
 - Use a stubbed model boundary for deterministic answer-generation tests.
+- Show citations for answers.
+- Include source note path and chunk index in citations.
+- Deduplicate repeated citation references.
+- Load evaluation cases from a local JSON file.
+- Represent each evaluation case with a question, expected source paths, and optional expected concepts.
 - Search, retrieve, and ask questions from the CLI as separate commands.
 
 Planned capabilities:
 
-- Show sources and citations for answers.
 - Evaluate retrieval quality.
 - Compare retrieval and context strategies.
 - Re-index changed notes.
@@ -146,6 +150,12 @@ Ask a question using retrieved context:
 ask What did I write about Kafka?
 ```
 
+The `ask` command prints the constructed context, a generated answer, and citations such as:
+
+```text
+sample_notes/kafka.md#chunk-0
+```
+
 You can also list loaded notes, show a note by path, or exit:
 
 ```text
@@ -159,6 +169,12 @@ Run the tests:
 ```bash
 python3 -m unittest discover
 ```
+
+## Evaluation Dataset
+
+v0.10 adds a small retrieval evaluation dataset at `eval/evaluation_cases.json`.
+Each case includes a user question, the source notes expected to be retrieved,
+and optional concepts that a good answer should cover.
 
 ## Project Roadmap
 
@@ -178,7 +194,7 @@ python3 -m unittest discover
 
 ## Evaluation Goal
 
-The project will include a small evaluation dataset so retrieval behavior can be measured instead of guessed.
+The project includes a small evaluation dataset so retrieval behavior can be measured instead of guessed.
 
 Example evaluation case:
 
@@ -186,7 +202,7 @@ Example evaluation case:
 {
   "question": "What did I write about Kafka?",
   "expected_sources": ["sample_notes/kafka.md"],
-  "expected_concepts": ["consumer lag", "producer throughput"]
+  "expected_concepts": ["distributed event streaming", "durable log", "consumer groups"]
 }
 ```
 
