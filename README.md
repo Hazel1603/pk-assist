@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.10 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, build compact context, answer questions from that context, show citations for the source chunks used in an answer, and load a small retrieval evaluation dataset from a local file.
+v0.11 is implemented. The app can retrieve and answer questions about notes, load a retrieval evaluation dataset, run retrieval for every evaluation question, calculate Recall@K, measure constructed-context size, and report per-question and aggregate results.
 
 Implemented features:
 
@@ -74,11 +74,15 @@ Implemented features:
 - Deduplicate repeated citation references.
 - Load evaluation cases from a local JSON file.
 - Represent each evaluation case with a question, expected source paths, and optional expected concepts.
-- Search, retrieve, and ask questions from the CLI as separate commands.
+- Validate evaluation files and report clear errors for missing files, malformed JSON, and invalid dataset structures.
+- Run every evaluation question with a configurable `top_k` value.
+- Calculate source-level Recall@K for each question.
+- Report expected sources, retrieved sources, Recall@K, and approximate context size per question.
+- Report average Recall@K and average context size across the evaluation dataset.
+- Search, retrieve, ask, and evaluate from the CLI as separate commands.
 
 Planned capabilities:
 
-- Evaluate retrieval quality.
 - Compare retrieval and context strategies.
 - Re-index changed notes.
 
@@ -164,6 +168,22 @@ show sample_notes/kafka.md
 bye
 ```
 
+Evaluate retrieval using the included dataset and `top_k=3`:
+
+```text
+evaluate eval/evaluation_cases.json 3
+```
+
+If `top_k` is omitted, it defaults to `3`:
+
+```text
+evaluate eval/evaluation_cases.json
+```
+
+The evaluation report shows each question's expected and retrieved source
+paths, Recall@K, and approximate context size. It then reports average Recall@K
+and average context size across all evaluation cases.
+
 Run the tests:
 
 ```bash
@@ -172,7 +192,7 @@ python3 -m unittest discover
 
 ## Evaluation Dataset
 
-v0.10 adds a small retrieval evaluation dataset at `eval/evaluation_cases.json`.
+The retrieval evaluation dataset is stored at `eval/evaluation_cases.json`.
 Each case includes a user question, the source notes expected to be retrieved,
 and optional concepts that a good answer should cover.
 
@@ -206,7 +226,8 @@ Example evaluation case:
 }
 ```
 
-The goal is to compare settings such as:
+v0.11 measures one retrieval setting at a time. The planned v0.12 work will
+compare settings such as:
 
 ```text
 top_k = 3
