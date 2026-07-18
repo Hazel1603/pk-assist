@@ -2,8 +2,6 @@
 
 A small personal knowledge assistant for learning retrieval-augmented generation, memory architecture, context management, and retrieval evaluation.
 
-This project follows the roadmap in `FUNCTIONAL_SPEC.md`. It builds on the earlier AI CLI Assistant described in `PREVIOUS_PROJECTS.md`, so that file should be passed in as background context alongside `FUNCTIONAL_SPEC.md`.
-
 ## Goal
 
 The assistant will help answer questions about a folder of personal notes. It should retrieve relevant notes or chunks, summarize the answer, and cite which source notes were used.
