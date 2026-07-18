@@ -15,3 +15,6 @@ def should_retrieve(user_input):
 
 def should_ask(user_input):
     return user_input.lower().startswith("ask")
+
+def should_evaluate(user_input):
+    return user_input.lower().startswith("evaluate")

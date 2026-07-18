@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.10 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, build compact context, answer questions from that context, show citations for the source chunks used in an answer, and load a small retrieval evaluation dataset from a local file.
+v0.11 is implemented. In addition to retrieving and answering questions about notes, the app can load a retrieval evaluation dataset, run every evaluation question, calculate Recall@K, measure constructed-context size, and report per-question and aggregate results.
 
 Implemented features:
 
@@ -70,11 +70,14 @@ Implemented features:
 - Include a small retrieval evaluation dataset.
 - Load evaluation cases from a local JSON file.
 - Represent each evaluation case with a question, expected source paths, and optional expected concepts.
-- Search, retrieve, and ask questions from the CLI as separate commands.
+- Evaluate retrieval with a configurable `top_k` value.
+- Report expected and retrieved sources for every evaluation question.
+- Calculate per-question and average Recall@K.
+- Report per-question and average context size in characters.
+- Search, retrieve, ask, and evaluate from the CLI as separate commands.
 
 Planned capabilities:
 
-- Evaluate retrieval quality.
 - Compare retrieval and context strategies.
 - Re-index changed notes.
 
@@ -166,9 +169,24 @@ Run the tests:
 python3 -m unittest discover
 ```
 
+Evaluate retrieval using the included dataset and `top_k=3`:
+
+```text
+evaluate eval/evaluation_cases.json 3
+```
+
+If `top_k` is omitted, the evaluation command defaults to `3`:
+
+```text
+evaluate eval/evaluation_cases.json
+```
+
+The command prints each question's expected and retrieved sources, Recall@K,
+and approximate context size, followed by averages across the dataset.
+
 ## Evaluation Dataset
 
-v0.10 adds a small retrieval evaluation dataset at `eval/evaluation_cases.json`.
+The retrieval evaluation dataset is stored at `eval/evaluation_cases.json`.
 Each case includes a question, the source notes expected to be retrieved, and
 optional concepts that a good answer should cover.
 

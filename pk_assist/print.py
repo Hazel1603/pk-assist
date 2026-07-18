@@ -1,4 +1,5 @@
 from pk_assist.notes import VectorRecord
+from pk_assist.evaluation import RetrievalAggregate, EvaluationResult
 
 computer = "⚯ : "
 confused = "(｡·  v  ·｡) ?"
@@ -33,7 +34,10 @@ def print_idk():
     print(f"{computer}{confused}")
 
 def print_not_folder_or_dir():
-    print(f"{computer}{confused} Folder does not exist or is not a directory! Skip loading...")
+    print(f"{computer}{confused} Folder does not exist or is not a directory! ")
+
+def print_not_file():
+    print(f"{computer}{confused} Path is not a file!")
 
 def print_no_query():
     print(f"{computer}{confused} No query provided.")
@@ -74,6 +78,31 @@ def print_citations(citations):
         return 
     for citation in citations:
         print(f"\t- {citation}")
+
+def print_evaluation_results(results: list[EvaluationResult]):
+    print(f"{computer}Individual Results:")
+    for result in results:
+        expected_sources = ", ".join(str(path) for path in result.case.expected_sources)
+        retrieved_sources = ", ".join(str(path) for path in result.retrieved_sources)
+        print(f"\tQuestion: {result.case.question}")
+        print(f"\tExpected sources: {expected_sources}")
+        print(f"\tRetrieved sources: {retrieved_sources}")
+        print(f"\tRecall@{result.top_k}: {result.recall_at_k}")
+        print(f"\tContext size: {result.context_size_chars} characters")
+        print("\n")
+
+def print_aggregate_results(result: RetrievalAggregate):
+    print(f"{computer}Aggregated Results:")
+    print(f"\tCases evaluated: {result.case_count}")
+    print(f"\tAverage Recall@{result.top_k}: {result.average_recall_at_k}")
+    print(f"\tAverage context size: {result.average_context_size_chars} characters")
+    
+def print_evaluation_error(error):
+    print(f"{computer}{confused} encountered the following error:")
+    print(error)
+
+def print_top_k_validation_error(error):
+    print(f"{computer}{confused} top_k must be {error}")
 
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")

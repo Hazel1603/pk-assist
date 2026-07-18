@@ -77,14 +77,18 @@ Sources and Evaluation
 
 ## Current Implementation Status
 
-Implemented through v0.9:
+Implemented through v0.11:
 
 - The CLI can load, list, show, search, retrieve, and ask questions about notes.
 - Retrieved chunks are converted into a compact context block with a character budget.
 - The `ask` command answers using constructed context and prints a friendly fallback when no context is available.
 - Answers show citations for the source chunks that were included in the constructed context.
 - Citations include source note path and chunk index, and repeated source references are displayed once.
-- Loader, search, chunking, embedding, vector storage, retrieval, context construction, answer generation, citation, print, and CLI behavior are covered by tests.
+- Evaluation cases can be loaded from a local JSON file with clear validation errors.
+- The CLI can evaluate every dataset question using a configurable `top_k` value.
+- Evaluation reports per-question expected and retrieved sources, Recall@K, and approximate context size.
+- Evaluation reports average Recall@K and average context size across the dataset.
+- Loader, search, chunking, embedding, vector storage, retrieval, context construction, answer generation, citation, evaluation, print, and CLI behavior are covered by tests.
 
 ## v0.1 Acceptance Criteria
 

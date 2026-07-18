@@ -5,6 +5,7 @@ from pk_assist.notes import load_notes, search_notes, chunk_notes, embed_chunks,
 from pk_assist.print import *
 from pk_assist.input_util import *
 from pk_assist.model import PlaceholderModel
+from pk_assist.evaluation import load_evaluation_cases, evaluate_retrieval, aggregate_retrieval, EvaluationDatasetError
 
 # temporary global variable
 NOTES = []
@@ -89,6 +90,41 @@ def run_cli():
                 print_context(context_result.text)
                 print_answer(answer)
                 print_citations(citations)
+            elif should_evaluate(user_input):
+                parts = user_input.split()
+                if len(parts) < 2 or parts[1].strip() == "":
+                    print_no_query()
+                    continue
+                
+                # retrieve and validate args
+                eval_file = parts[1]
+                try:
+                    top_k = 3 if len(parts) == 2 else int(parts[2])
+                except ValueError:
+                    print_top_k_validation_error("a whole number.")
+                    continue
+
+                if top_k <= 0:
+                    print_top_k_validation_error("greater than zero.")
+                    continue
+
+                eval_file_path = Path(eval_file)
+                if not eval_file_path.exists() or not eval_file_path.is_file():
+                    print_not_file()
+                    continue
+                
+                # evaluate
+                try:
+                    cases = load_evaluation_cases(eval_file_path)
+                except EvaluationDatasetError as error:
+                    print_evaluation_error(str(error))
+                    continue
+                results = evaluate_retrieval(cases, DATABASE, top_k)
+                print_evaluation_results(results)
+
+                aggregated_results = aggregate_retrieval(results, top_k)
+                print_aggregate_results(aggregated_results)
+
             else:
                 print_idk()
                 continue
