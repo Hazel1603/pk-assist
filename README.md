@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.9 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, build compact context, answer questions from that context, and show citations for the source chunks used in an answer.
+v0.10 is implemented. The app can load notes from a folder, search loaded notes with simple keyword matching, split loaded notes into smaller text chunks, generate fake embeddings, store embedded chunks in a local in-memory vector database, retrieve relevant chunks for a user question, build compact context, answer questions from that context, show citations for the source chunks used in an answer, and load a small retrieval evaluation dataset from a local file.
 
 Implemented features:
 
@@ -67,6 +67,9 @@ Implemented features:
 - Show citations for answers.
 - Include source note path and chunk index in citations.
 - Deduplicate repeated citation references.
+- Include a small retrieval evaluation dataset.
+- Load evaluation cases from a local JSON file.
+- Represent each evaluation case with a question, expected source paths, and optional expected concepts.
 - Search, retrieve, and ask questions from the CLI as separate commands.
 
 Planned capabilities:
@@ -187,7 +190,7 @@ optional concepts that a good answer should cover.
 
 ## Evaluation Goal
 
-The project will include a small evaluation dataset so retrieval behavior can be measured instead of guessed.
+The project includes a small evaluation dataset so retrieval behavior can be measured instead of guessed.
 
 Example evaluation case:
 
@@ -195,7 +198,7 @@ Example evaluation case:
 {
   "question": "What did I write about Kafka?",
   "expected_sources": ["sample_notes/kafka.md"],
-  "expected_concepts": ["consumer lag", "producer throughput"]
+  "expected_concepts": ["distributed event streaming", "durable log", "consumer groups"]
 }
 ```
 
