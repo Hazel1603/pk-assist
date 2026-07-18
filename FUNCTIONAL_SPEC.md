@@ -77,7 +77,17 @@ Sources and Evaluation
 
 ## Current Implementation Status
 
-v0.8 is implemented. The app can now retrieve relevant chunks, construct a compact context block from them, and answer a user question using that constructed context. The CLI keeps retrieval/context inspection separate from generated answers, and answer generation is covered by tests that use a fake or stubbed model boundary.
+Implemented through v0.12:
+
+- The CLI can load, list, show, search, retrieve, and ask questions about notes.
+- Retrieved chunks are converted into a compact context block with a character budget.
+- Answers use constructed context and show citations for the source chunks used.
+- Evaluation datasets are validated and run with a configurable `top_k` value.
+- Evaluation reports per-question and average Recall@K and context size.
+- The CLI can compare two or more `top_k` retrieval settings in one run.
+- Strategy comparison reports average Recall@K and average context size for each setting.
+- Comparison output makes retrieval-quality and context-cost tradeoffs visible.
+- Comparison behavior is covered by evaluation, CLI, input, and printing tests.
 
 ## v0.1 Acceptance Criteria
 

@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.11 is implemented. The app can retrieve and answer questions about notes, load a retrieval evaluation dataset, run retrieval for every evaluation question, calculate Recall@K, measure constructed-context size, and report per-question and aggregate results.
+v0.12 is implemented. The app can evaluate one retrieval setting or compare multiple `top_k` settings, reporting average Recall@K and constructed-context size for each setting.
 
 Implemented features:
 
@@ -79,11 +79,13 @@ Implemented features:
 - Calculate source-level Recall@K for each question.
 - Report expected sources, retrieved sources, Recall@K, and approximate context size per question.
 - Report average Recall@K and average context size across the evaluation dataset.
-- Search, retrieve, ask, and evaluate from the CLI as separate commands.
+- Compare two or more `top_k` retrieval settings in one run.
+- Report average Recall@K and average context size for each compared setting.
+- Make retrieval-quality and context-cost tradeoffs visible.
+- Search, retrieve, ask, evaluate, and compare from the CLI as separate commands.
 
 Planned capabilities:
 
-- Compare retrieval and context strategies.
 - Re-index changed notes.
 
 ## Context Files
@@ -184,6 +186,21 @@ The evaluation report shows each question's expected and retrieved source
 paths, Recall@K, and approximate context size. It then reports average Recall@K
 and average context size across all evaluation cases.
 
+Compare two or more retrieval settings in one run:
+
+```text
+compare eval/evaluation_cases.json 3 5
+```
+
+Additional settings can be included in the same command:
+
+```text
+compare eval/evaluation_cases.json 3 5 10
+```
+
+The comparison report shows average Recall@K and average context size for each
+setting so that retrieval quality can be weighed against context cost.
+
 Run the tests:
 
 ```bash
@@ -226,8 +243,7 @@ Example evaluation case:
 }
 ```
 
-v0.11 measures one retrieval setting at a time. The planned v0.12 work will
-compare settings such as:
+v0.12 can compare settings such as:
 
 ```text
 top_k = 3
