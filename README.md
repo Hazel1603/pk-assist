@@ -93,7 +93,7 @@ Implemented features:
 - `FUNCTIONAL_SPEC.md` defines the project goal, learning objectives, and version roadmap.
 - `PREVIOUS_PROJECTS.md` summarizes the earlier AI CLI Assistant project and the concepts already covered.
 
-## You'll Learn
+## Concepts Demonstrated
 
 - Embeddings
 - Semantic search
