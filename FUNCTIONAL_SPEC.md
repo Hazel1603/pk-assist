@@ -77,7 +77,7 @@ Sources and Evaluation
 
 ## Current Implementation Status
 
-Implemented through v0.11:
+Implemented through v0.12:
 
 - The CLI can load, list, show, search, retrieve, and ask questions about notes.
 - Retrieved chunks are converted into a compact context block with a character budget.
@@ -88,6 +88,9 @@ Implemented through v0.11:
 - The CLI can evaluate every dataset question using a configurable `top_k` value.
 - Evaluation reports per-question expected and retrieved sources, Recall@K, and approximate context size.
 - Evaluation reports average Recall@K and average context size across the dataset.
+- The CLI can compare two or more `top_k` retrieval settings in one run.
+- Strategy comparison reports average Recall@K and average context size for each setting.
+- Comparison output makes retrieval-quality and context-cost tradeoffs visible.
 - Loader, search, chunking, embedding, vector storage, retrieval, context construction, answer generation, citation, evaluation, print, and CLI behavior are covered by tests.
 
 ## v0.1 Acceptance Criteria

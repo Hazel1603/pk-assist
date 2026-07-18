@@ -104,5 +104,14 @@ def print_evaluation_error(error):
 def print_top_k_validation_error(error):
     print(f"{computer}{confused} top_k must be {error}")
 
+def print_not_enough_arguments():
+    print(f"{computer}{confused} Insufficient arguments for compare command")
+
+def print_aggregate_list(aggregates: list[RetrievalAggregate]):
+    print(f"{computer}Comparison Results:")
+    print(f"top_k\tavg Recall@K\tavg context chars")
+    for agg in aggregates:
+        print(f"{agg.top_k}\t{agg.average_recall_at_k}\t\t{agg.average_context_size_chars}")
+
 def print_goodbye():
     print(f"{computer}(„• ֊ •„)੭ Adios!")

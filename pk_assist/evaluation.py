@@ -144,7 +144,6 @@ class RetrievalAggregate:
     average_recall_at_k: float
     average_context_size_chars: float
 
-
 def aggregate_retrieval(results: list[EvaluationResult], top_k: int) -> RetrievalAggregate:
     
     average_recall = sum(result.recall_at_k for result in results)/len(results) if results else 0.0
@@ -157,3 +156,18 @@ def aggregate_retrieval(results: list[EvaluationResult], top_k: int) -> Retrieva
         average_recall_at_k=average_recall,
         average_context_size_chars=average_context_size
     )
+
+
+def compare_retrieval_settings(
+    cases: list[EvaluationCase],
+    database: LocalVectorDatabase,
+    top_k_values: list[int],
+) -> list[RetrievalAggregate]:
+    aggregates = []
+
+    for top_k in top_k_values:
+        results = evaluate_retrieval(cases, database, top_k)
+        aggregates.append(aggregate_retrieval(results, top_k))
+
+    return aggregates
+    

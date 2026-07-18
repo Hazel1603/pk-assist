@@ -8,13 +8,16 @@ def should_show(user_input):
     return user_input.lower().startswith("show ")
 
 def should_search(user_input):
-    return user_input.lower().startswith("search") or user_input.lower().startswith("query")
+    return user_input.lower().startswith("search ") or user_input.lower().startswith("query ")
 
 def should_retrieve(user_input):
-    return user_input.lower().startswith("retrieve")
+    return user_input.lower().startswith("retrieve ")
 
 def should_ask(user_input):
-    return user_input.lower().startswith("ask")
+    return user_input.lower().startswith("ask ")
 
 def should_evaluate(user_input):
-    return user_input.lower().startswith("evaluate")
+    return user_input.lower().startswith("evaluate ")
+    
+def should_compare(user_input):
+    return user_input.lower().startswith("compare ")

@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.11 is implemented. In addition to retrieving and answering questions about notes, the app can load a retrieval evaluation dataset, run every evaluation question, calculate Recall@K, measure constructed-context size, and report per-question and aggregate results.
+v0.12 is implemented. In addition to evaluating one retrieval setting, the app can compare multiple `top_k` settings and show their average Recall@K and constructed-context size side by side.
 
 Implemented features:
 
@@ -74,11 +74,13 @@ Implemented features:
 - Report expected and retrieved sources for every evaluation question.
 - Calculate per-question and average Recall@K.
 - Report per-question and average context size in characters.
-- Search, retrieve, ask, and evaluate from the CLI as separate commands.
+- Compare two or more retrieval settings in one run.
+- Report average Recall@K and context size for each compared setting.
+- Make retrieval-quality and context-cost tradeoffs visible.
+- Search, retrieve, ask, evaluate, and compare from the CLI as separate commands.
 
 Planned capabilities:
 
-- Compare retrieval and context strategies.
 - Re-index changed notes.
 
 ## Context Files
@@ -183,6 +185,20 @@ evaluate eval/evaluation_cases.json
 
 The command prints each question's expected and retrieved sources, Recall@K,
 and approximate context size, followed by averages across the dataset.
+
+Compare two or more retrieval settings in one run:
+
+```text
+compare eval/evaluation_cases.json 3 5
+```
+
+The comparison reports average Recall@K and average context size for each
+setting, making the quality-versus-context-cost tradeoff visible. More settings
+can be included when needed:
+
+```text
+compare eval/evaluation_cases.json 3 5 10
+```
 
 ## Evaluation Dataset
 

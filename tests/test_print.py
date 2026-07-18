@@ -3,8 +3,13 @@ from contextlib import redirect_stdout
 from io import StringIO
 from pathlib import Path
 
-from pk_assist.evaluation import EvaluationCase, EvaluationResult
-from pk_assist.print import print_answer, print_citations, print_evaluation_results
+from pk_assist.evaluation import EvaluationCase, EvaluationResult, RetrievalAggregate
+from pk_assist.print import (
+    print_aggregate_list,
+    print_answer,
+    print_citations,
+    print_evaluation_results,
+)
 
 
 class PrintAnswerTests(unittest.TestCase):
@@ -68,6 +73,46 @@ class PrintEvaluationResultsTests(unittest.TestCase):
         self.assertIn("Recall@3: 1.0", printed)
         self.assertIn("Context size: 420 characters", printed)
         self.assertNotIn("Context size char:", printed)
+
+
+class PrintAggregateListTests(unittest.TestCase):
+    def test_prints_each_setting_recall_and_context_size(self):
+        aggregates = [
+            RetrievalAggregate(
+                top_k=3,
+                case_count=4,
+                average_recall_at_k=0.75,
+                average_context_size_chars=420.0,
+            ),
+            RetrievalAggregate(
+                top_k=5,
+                case_count=4,
+                average_recall_at_k=1.0,
+                average_context_size_chars=710.0,
+            ),
+        ]
+        output = StringIO()
+
+        with redirect_stdout(output):
+            print_aggregate_list(aggregates)
+
+        printed = output.getvalue()
+        self.assertIn("Comparison Results:", printed)
+        self.assertIn("top_k", printed)
+        self.assertIn("avg Recall@K", printed)
+        self.assertIn("avg context chars", printed)
+        self.assertIn("3\t0.75\t\t420.0", printed)
+        self.assertIn("5\t1.0\t\t710.0", printed)
+
+    def test_prints_headers_for_an_empty_comparison(self):
+        output = StringIO()
+
+        with redirect_stdout(output):
+            print_aggregate_list([])
+
+        printed = output.getvalue()
+        self.assertIn("Comparison Results:", printed)
+        self.assertIn("top_k", printed)
 
 
 if __name__ == "__main__":

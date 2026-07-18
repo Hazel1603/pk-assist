@@ -201,5 +201,121 @@ class RunCliEvaluateTests(unittest.TestCase):
             self.assertIn("Evaluation file contains invalid JSON.", output.getvalue())
 
 
+class RunCliCompareTests(unittest.TestCase):
+    def test_compare_command_uses_all_settings_and_prints_aggregates(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            eval_path = Path(temp_dir) / "cases.json"
+            eval_path.write_text("[]", encoding="utf-8")
+            database = object()
+            aggregates = [
+                RetrievalAggregate(3, 0, 0.0, 0.0),
+                RetrievalAggregate(5, 0, 0.0, 0.0),
+            ]
+
+            with patch.object(cli, "DATABASE", database):
+                with patch.object(cli, "load_evaluation_cases", return_value=[]) as load:
+                    with patch.object(
+                        cli,
+                        "compare_retrieval_settings",
+                        return_value=aggregates,
+                    ) as compare:
+                        with patch.object(cli, "print_aggregate_list") as print_list:
+                            with patch(
+                                "builtins.input",
+                                side_effect=[f"compare {eval_path} 3 5", "bye"],
+                            ):
+                                cli.run_cli()
+
+            load.assert_called_once_with(eval_path)
+            compare.assert_called_once_with([], database, [3, 5])
+            print_list.assert_called_once_with(aggregates)
+
+    def test_requires_at_least_two_settings(self):
+        output = StringIO()
+
+        with patch.object(cli, "load_evaluation_cases") as load:
+            with patch(
+                "builtins.input",
+                side_effect=["compare eval/evaluation_cases.json 3", "bye"],
+            ):
+                with redirect_stdout(output):
+                    cli.run_cli()
+
+        self.assertIn("Insufficient arguments for compare command", output.getvalue())
+        load.assert_not_called()
+
+    def test_non_integer_setting_prints_error_and_does_not_load_dataset(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            eval_path = Path(temp_dir) / "cases.json"
+            eval_path.write_text("[]", encoding="utf-8")
+            output = StringIO()
+
+            with patch.object(cli, "load_evaluation_cases") as load:
+                with patch(
+                    "builtins.input",
+                    side_effect=[f"compare {eval_path} 3 abc", "bye"],
+                ):
+                    with redirect_stdout(output):
+                        cli.run_cli()
+
+            self.assertIn("top_k must be a whole number.", output.getvalue())
+            load.assert_not_called()
+
+    def test_non_positive_setting_prints_error_and_does_not_load_dataset(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            eval_path = Path(temp_dir) / "cases.json"
+            eval_path.write_text("[]", encoding="utf-8")
+            output = StringIO()
+
+            with patch.object(cli, "load_evaluation_cases") as load:
+                with patch(
+                    "builtins.input",
+                    side_effect=[f"compare {eval_path} 3 0", "bye"],
+                ):
+                    with redirect_stdout(output):
+                        cli.run_cli()
+
+            self.assertIn("top_k must be greater than zero.", output.getvalue())
+            load.assert_not_called()
+
+    def test_missing_evaluation_file_does_not_run_comparison(self):
+        output = StringIO()
+
+        with patch.object(cli, "compare_retrieval_settings") as compare:
+            with patch(
+                "builtins.input",
+                side_effect=["compare missing-cases.json 3 5", "bye"],
+            ):
+                with redirect_stdout(output):
+                    cli.run_cli()
+
+        self.assertIn("Path is not a file!", output.getvalue())
+        compare.assert_not_called()
+
+    def test_dataset_validation_error_is_printed_and_comparison_is_not_run(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            eval_path = Path(temp_dir) / "cases.json"
+            eval_path.write_text("not-json", encoding="utf-8")
+            output = StringIO()
+
+            with patch.object(
+                cli,
+                "load_evaluation_cases",
+                side_effect=EvaluationDatasetError(
+                    "Evaluation file contains invalid JSON."
+                ),
+            ):
+                with patch.object(cli, "compare_retrieval_settings") as compare:
+                    with patch(
+                        "builtins.input",
+                        side_effect=[f"compare {eval_path} 3 5", "bye"],
+                    ):
+                        with redirect_stdout(output):
+                            cli.run_cli()
+
+            self.assertIn("Evaluation file contains invalid JSON.", output.getvalue())
+            compare.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -9,6 +9,7 @@ from pk_assist.evaluation import (
     RetrievalAggregate,
     aggregate_retrieval,
     calculate_recall_at_k,
+    compare_retrieval_settings,
     evaluate_case,
     evaluate_retrieval,
     load_evaluation_cases,
@@ -419,3 +420,92 @@ class AggregateRetrievalTests(unittest.TestCase):
                 average_context_size_chars=0.0,
             ),
         )
+
+
+class CompareRetrievalSettingsTests(unittest.TestCase):
+    def setUp(self):
+        self.cases = [
+            EvaluationCase(
+                question="What did I write about Kafka?",
+                expected_sources=[Path("kafka.md")],
+                expected_concepts=[],
+            )
+        ]
+
+    def test_compares_top_k_three_and_five(self):
+        database = StubVectorDatabase([])
+
+        compare_retrieval_settings(self.cases, database, [3, 5])
+
+        self.assertEqual(
+            database.search_calls,
+            [
+                ("What did I write about Kafka?", 3),
+                ("What did I write about Kafka?", 5),
+            ],
+        )
+
+    def test_returns_one_aggregate_for_each_setting(self):
+        database = StubVectorDatabase([])
+
+        aggregates = compare_retrieval_settings(
+            self.cases,
+            database,
+            [3, 5],
+        )
+
+        self.assertEqual(len(aggregates), 2)
+        self.assertTrue(
+            all(isinstance(aggregate, RetrievalAggregate) for aggregate in aggregates)
+        )
+
+    def test_preserves_the_requested_setting_order(self):
+        database = StubVectorDatabase([])
+
+        aggregates = compare_retrieval_settings(
+            self.cases,
+            database,
+            [5, 3],
+        )
+
+        self.assertEqual([aggregate.top_k for aggregate in aggregates], [5, 3])
+
+    def test_reports_recall_and_context_size_for_each_setting(self):
+        class LimitAwareDatabase:
+            def search(self, query, limit):
+                records = [
+                    VectorRecord(
+                        note_path=Path("other.md"),
+                        chunk_index=0,
+                        content="An unrelated note.",
+                        embedding=[],
+                    ),
+                    VectorRecord(
+                        note_path=Path("kafka.md"),
+                        chunk_index=0,
+                        content="Kafka stores events in a durable log.",
+                        embedding=[],
+                    ),
+                ]
+                return records[:1] if limit == 3 else records
+
+        aggregates = compare_retrieval_settings(
+            self.cases,
+            LimitAwareDatabase(),
+            [3, 5],
+        )
+
+        self.assertEqual(aggregates[0].average_recall_at_k, 0.0)
+        self.assertEqual(aggregates[1].average_recall_at_k, 1.0)
+        self.assertLess(
+            aggregates[0].average_context_size_chars,
+            aggregates[1].average_context_size_chars,
+        )
+
+    def test_handles_an_empty_settings_list(self):
+        database = StubVectorDatabase([])
+
+        aggregates = compare_retrieval_settings(self.cases, database, [])
+
+        self.assertEqual(aggregates, [])
+        self.assertEqual(database.search_calls, [])
