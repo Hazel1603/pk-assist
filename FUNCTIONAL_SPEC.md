@@ -77,7 +77,7 @@ Sources and Evaluation
 
 ## Current Implementation Status
 
-Implemented through v0.12:
+Implemented through v0.13:
 
 - The CLI can load, list, show, search, retrieve, and ask questions about notes.
 - Retrieved chunks are converted into a compact context block with a character budget.
@@ -91,7 +91,10 @@ Implemented through v0.12:
 - The CLI can compare two or more `top_k` retrieval settings in one run.
 - Strategy comparison reports average Recall@K and average context size for each setting.
 - Comparison output makes retrieval-quality and context-cost tradeoffs visible.
-- Loader, search, chunking, embedding, vector storage, retrieval, context construction, answer generation, citation, evaluation, print, and CLI behavior are covered by tests.
+- The CLI can reload the notes folder and rebuild the vector index with the `update` command.
+- Re-indexing reflects added, changed, and deleted notes while preserving deterministic records for unchanged notes.
+- The CLI reports when re-indexing completes and handles an update request safely when no notes folder was initialized.
+- Loader, search, chunking, embedding, vector storage, retrieval, context construction, answer generation, citation, evaluation, re-indexing, print, and CLI behavior are covered by tests.
 
 ## v0.1 Acceptance Criteria
 

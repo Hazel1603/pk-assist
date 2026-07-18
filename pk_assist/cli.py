@@ -12,24 +12,14 @@ NOTES = []
 CHUNKS = []
 EMBEDDED_CHUNKS = []
 DATABASE = None
+FOLDER = None
 
-def init_app():
+def load_database(folder):
     global NOTES
     global CHUNKS
     global EMBEDDED_CHUNKS
     global DATABASE
-    
-    if len(sys.argv) < 2:
-        print_no_folder()
-        return
 
-    folder_arg = sys.argv[1]
-    folder = Path(folder_arg)
-
-    if not folder.exists() or not folder.is_dir():
-        print_not_folder_or_dir()
-        return
-    
     NOTES = load_notes(folder)
     print_loaded_notes(NOTES)
 
@@ -42,6 +32,22 @@ def init_app():
     DATABASE = LocalVectorDatabase()
     DATABASE.add_many(EMBEDDED_CHUNKS)
     print_database_entries(DATABASE.count())
+
+def init_app():
+    global FOLDER
+    if len(sys.argv) < 2:
+        print_no_folder()
+        return
+
+    folder_arg = sys.argv[1]
+    folder = Path(folder_arg)
+
+    if not folder.exists() or not folder.is_dir():
+        print_not_folder_or_dir()
+        return
+
+    FOLDER = folder
+    load_database(FOLDER)
 
 def handle_show_command(user_input: str, notes: list[Note]):
     # argument validation
@@ -156,6 +162,15 @@ def handle_compare_command(user_input: str, database: LocalVectorDatabase):
     print_aggregate_list(aggregate_list)
 
 
+def handle_update_command(folder: Path | None):
+    if folder is None:
+        print_no_folder()
+        return
+
+    load_database(folder)
+    print_update_success()
+
+
 def run_cli():
     global NOTES
     try:
@@ -178,6 +193,8 @@ def run_cli():
                 handle_evaluate_command(user_input, DATABASE)
             elif should_compare(user_input):
                 handle_compare_command(user_input, DATABASE)
+            elif should_update(user_input):
+                handle_update_command(FOLDER)
             else:
                 print_idk()
     except (KeyboardInterrupt, EOFError):

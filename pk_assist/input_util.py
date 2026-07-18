@@ -21,3 +21,6 @@ def should_evaluate(user_input):
     
 def should_compare(user_input):
     return user_input.lower().startswith("compare ")
+
+def should_update(user_input):
+    return user_input.lower() in {"update"}

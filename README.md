@@ -30,7 +30,7 @@ Find notes related to vector databases.
 
 ## Current Status
 
-v0.12 is implemented. In addition to evaluating one retrieval setting, the app can compare multiple `top_k` settings and show their average Recall@K and constructed-context size side by side.
+v0.13 is implemented. The app can reload the notes folder and rebuild its vector index after notes are added, changed, or deleted.
 
 Implemented features:
 
@@ -77,11 +77,8 @@ Implemented features:
 - Compare two or more retrieval settings in one run.
 - Report average Recall@K and context size for each compared setting.
 - Make retrieval-quality and context-cost tradeoffs visible.
-- Search, retrieve, ask, evaluate, and compare from the CLI as separate commands.
-
-Planned capabilities:
-
-- Re-index changed notes.
+- Re-index notes after files are added, changed, or deleted.
+- Search, retrieve, ask, evaluate, compare, and update from the CLI as separate commands.
 
 ## Context Files
 
@@ -199,6 +196,15 @@ can be included when needed:
 ```text
 compare eval/evaluation_cases.json 3 5 10
 ```
+
+After adding, changing, or deleting notes while the CLI is running, reload the
+notes and rebuild the vector index:
+
+```text
+update
+```
+
+The command reports when the update completes successfully.
 
 ## Evaluation Dataset
 

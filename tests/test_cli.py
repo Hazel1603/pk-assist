@@ -317,5 +317,102 @@ class RunCliCompareTests(unittest.TestCase):
             compare.assert_not_called()
 
 
+class RunCliUpdateTests(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.folder = Path(self.temp_dir.name)
+        self.note_path = self.folder / "kafka.md"
+        self.note_path.write_text("Kafka stores events.", encoding="utf-8")
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
+        cli.NOTES = []
+        cli.CHUNKS = []
+        cli.EMBEDDED_CHUNKS = []
+        cli.DATABASE = None
+        cli.FOLDER = None
+
+    def initialize_app(self):
+        with patch.object(cli.sys, "argv", ["pk_assist.cli", str(self.folder)]):
+            with redirect_stdout(StringIO()):
+                cli.init_app()
+
+    def run_update(self):
+        with patch("builtins.input", side_effect=["update", "bye"]):
+            with redirect_stdout(StringIO()):
+                cli.run_cli()
+
+    def test_update_adds_records_for_a_new_note(self):
+        self.initialize_app()
+        new_note = self.folder / "memory.txt"
+        new_note.write_text("Agents use memory.", encoding="utf-8")
+
+        self.run_update()
+
+        self.assertEqual(
+            {record.note_path for record in cli.DATABASE.records},
+            {self.note_path, new_note},
+        )
+
+    def test_update_replaces_records_for_a_changed_note(self):
+        self.initialize_app()
+        old_records = list(cli.DATABASE.records)
+        self.note_path.write_text("Kafka uses consumer groups.", encoding="utf-8")
+
+        self.run_update()
+
+        self.assertEqual(cli.DATABASE.count(), 1)
+        self.assertEqual(cli.DATABASE.records[0].content, "Kafka uses consumer groups.")
+        self.assertNotEqual(cli.DATABASE.records, old_records)
+
+    def test_update_removes_records_for_a_deleted_note(self):
+        self.initialize_app()
+        self.note_path.unlink()
+
+        self.run_update()
+
+        self.assertEqual(cli.NOTES, [])
+        self.assertEqual(cli.DATABASE.records, [])
+
+    def test_update_is_deterministic_for_an_unchanged_note(self):
+        self.initialize_app()
+        original_records = list(cli.DATABASE.records)
+
+        self.run_update()
+
+        self.assertEqual(cli.DATABASE.records, original_records)
+
+    def test_update_command_rebuilds_the_database_once(self):
+        cli.FOLDER = self.folder
+
+        with patch.object(cli, "load_database") as load_database:
+            with patch("builtins.input", side_effect=["update", "bye"]):
+                cli.run_cli()
+
+        load_database.assert_called_once_with(cli.FOLDER)
+
+    def test_update_prints_a_completion_message(self):
+        self.initialize_app()
+        output = StringIO()
+
+        with patch("builtins.input", side_effect=["update", "bye"]):
+            with redirect_stdout(output):
+                cli.run_cli()
+
+        self.assertIn("Notes updated successfully.", output.getvalue())
+
+    def test_update_without_an_initialized_folder_does_not_rebuild(self):
+        cli.FOLDER = None
+        output = StringIO()
+
+        with patch.object(cli, "load_database") as load_database:
+            with patch("builtins.input", side_effect=["update", "bye"]):
+                with redirect_stdout(output):
+                    cli.run_cli()
+
+        load_database.assert_not_called()
+        self.assertIn("No notes folder passed!", output.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()

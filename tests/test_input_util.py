@@ -1,6 +1,11 @@
 import unittest
 
-from pk_assist.input_util import should_ask, should_compare, should_evaluate
+from pk_assist.input_util import (
+    should_ask,
+    should_compare,
+    should_evaluate,
+    should_update,
+)
 
 
 class ShouldAskTests(unittest.TestCase):
@@ -38,6 +43,20 @@ class ShouldCompareTests(unittest.TestCase):
 
     def test_does_not_recognize_unrelated_command(self):
         self.assertFalse(should_compare("evaluate eval/evaluation_cases.json 3"))
+
+
+class ShouldUpdateTests(unittest.TestCase):
+    def test_recognizes_update_command(self):
+        self.assertTrue(should_update("update"))
+
+    def test_recognizes_update_command_case_insensitively(self):
+        self.assertTrue(should_update("UPDATE"))
+
+    def test_does_not_recognize_update_with_arguments(self):
+        self.assertFalse(should_update("update sample_notes"))
+
+    def test_does_not_recognize_unrelated_command(self):
+        self.assertFalse(should_update("retrieve Kafka"))
 
 
 if __name__ == "__main__":
