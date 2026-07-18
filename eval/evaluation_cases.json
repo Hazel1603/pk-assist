@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What did I write about Kafka?",
+    "expected_sources": ["sample_notes/kafka.md"],
+    "expected_concepts": ["distributed event streaming", "durable log", "consumer groups"]
+  },
+  {
+    "question": "Summarize my notes on agent memory.",
+    "expected_sources": ["sample_notes/agent-memory.txt"],
+    "expected_concepts": ["short-term memory", "long-term memory", "storage layer"]
+  },
+  {
+    "question": "Find notes related to vector databases.",
+    "expected_sources": ["sample_notes/vector-databases.md"],
+    "expected_concepts": ["embeddings", "semantic search", "retrieval-augmented generation"]
+  },
+  {
+    "question": "What did I write about chunking?",
+    "expected_sources": ["sample_notes/research/chunking.txt"],
+    "expected_concepts": ["splitting documents", "chunk size", "overlap"]
+  }
+]

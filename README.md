@@ -163,6 +163,12 @@ Run the tests:
 python3 -m unittest discover
 ```
 
+## Evaluation Dataset
+
+v0.10 adds a small retrieval evaluation dataset at `eval/evaluation_cases.json`.
+Each case includes a question, the source notes expected to be retrieved, and
+optional concepts that a good answer should cover.
+
 ## Project Roadmap
 
 - v0.1 - Load notes from a folder.
